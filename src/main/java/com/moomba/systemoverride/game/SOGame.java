@@ -1,4 +1,6 @@
 package com.moomba.systemoverride.game;
 
-public class SOGame {
+import com.moomba.systemoverride.engine.Game;
+
+public class SOGame extends Game{
 }
