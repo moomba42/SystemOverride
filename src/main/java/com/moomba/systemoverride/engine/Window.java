@@ -59,29 +59,13 @@ public class Window {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
 
-        //get the available OpenGL version
-        glfwDefaultWindowHints();
-        glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
-        long temp = glfwCreateWindow(1, 1, "", NULL, NULL);
-        glfwMakeContextCurrent(temp);
-        createCapabilities();
-        GLCapabilities caps = getCapabilities();
-        glfwDestroyWindow(temp);
-
         //set the actual window window hints
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW.GLFW_RESIZABLE, resizable ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
-//        if(caps.OpenGL32){
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-//        }else if(caps.OpenGL21){
-//            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-//            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-//        }else{
-//            throw new RuntimeException("OpenGL is not supported, please update your graphics drivers.");
-//        }
 
         //create the window and store its id in the variable id
         id = GLFW.glfwCreateWindow(width, height, title, fullscreen ? GLFW.glfwGetPrimaryMonitor() : NULL, NULL);
@@ -94,6 +78,8 @@ public class Window {
         centerWindow();
 
         glfwMakeContextCurrent(id);
+
+        createCapabilities();
 
         setVsync(vsync);
 

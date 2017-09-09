@@ -1,20 +1,8 @@
-#version 330
+#version 330 core
 
-in vec3 position;
-in vec3 normal;
-in vec3 color;
+layout(location = 0) in vec2 position;
 
-out vec3 pass_normal;
-out vec3 pass_color;
-out vec3 pass_location;
-
-uniform mat4 m_matrix;
-uniform mat4 mvp_matrix;
-uniform vec3 camera_location;
-
-void main(){
-    pass_normal = normal;
-    pass_color = color;
-    pass_location = (m_matrix*vec4(position, 1.0)).xyz;
-    gl_Position = mvp_matrix*vec4(position, 0.0);
+void main()
+{
+    gl_Position = vec4(position, 0.0, 1.0);
 }
