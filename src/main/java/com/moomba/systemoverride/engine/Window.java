@@ -71,17 +71,17 @@ public class Window {
         //set the actual window window hints
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW.GLFW_RESIZABLE, resizable ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
-        if(caps.OpenGL32){
+//        if(caps.OpenGL32){
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
             glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-            //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-        }else if(caps.OpenGL21){
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-        }else{
-            throw new RuntimeException("OpenGL is not supported, please update your graphics drivers.");
-        }
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+//        }else if(caps.OpenGL21){
+//            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+//            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+//        }else{
+//            throw new RuntimeException("OpenGL is not supported, please update your graphics drivers.");
+//        }
 
         //create the window and store its id in the variable id
         id = GLFW.glfwCreateWindow(width, height, title, fullscreen ? GLFW.glfwGetPrimaryMonitor() : NULL, NULL);
@@ -113,7 +113,7 @@ public class Window {
         //get the current monitor video mode
         GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
 
-        //get this window's size (no, you cant use the fields width & height - would cause problems with retina)
+        //get this window's size (no, you cant bind the fields width & height - would cause problems with retina)
         IntBuffer w = BufferUtils.createIntBuffer(1);
         IntBuffer h = BufferUtils.createIntBuffer(1);
         glfwGetWindowSize(getID(), w, h);

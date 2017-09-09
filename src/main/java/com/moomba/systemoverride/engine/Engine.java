@@ -52,6 +52,7 @@ public class Engine implements Runnable{
         inputManager.init();
 
         renderer = new Renderer();
+        renderer.init();
         assetLoader = new AssetLoader();
 
         systems.forEach(EntitySystem::init);
@@ -126,7 +127,6 @@ public class Engine implements Runnable{
     }
 
     private void update() {
-        System.out.println("Update");
         if(window.shouldClose()){
             dispose();
         }
@@ -135,12 +135,11 @@ public class Engine implements Runnable{
     }
 
     private void render() {
-        System.out.println("Render");
 
         glClearColor(0f, 0f, 0f, 1f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //render stuff here
+        renderer.render();
 
         window.update();
     }
