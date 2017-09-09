@@ -1,5 +1,6 @@
 package com.moomba.systemoverride.engine;
 
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
@@ -18,6 +19,7 @@ import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL.createCapabilities;
+import static org.lwjgl.opengl.GL.getCapabilities;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -27,44 +29,59 @@ import java.util.List;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.*;
+import org.lwjgl.opengl.GLCapabilities;
 
 public class Window {
 
     private long id;
     private int width, height;
     private String title;
-    private boolean visible, resizable, fullscreen, vsync;
+    private boolean resizable, fullscreen, vsync, visible;
 
     private List<ResizeListener> resizeListeners;
-    GLFWErrorCallback errorCallback;
 
-    public Window(int width, int height, String title, boolean visible, boolean resizable, boolean fullscreen, boolean vsync){
+    public Window(int width, int height, String title, boolean resizable, boolean fullscreen, boolean vsync){
         this.width = width;
         this.height = height;
         this.title = title;
-        this.visible = visible;
         this.resizable = resizable;
         this.fullscreen = fullscreen;
+        this.visible = true;
         resizeListeners = new ArrayList<>();
     }
 
     public void init(){
-        errorCallback = GLFWErrorCallback.createPrint();
-        glfwSetErrorCallback(errorCallback);
+        //set the error callback
+        GLFWErrorCallback.createPrint(System.err).set();
 
         //initialize GLFW
         if (!glfwInit()) {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
 
-        //set window properties
+        //get the available OpenGL version
         glfwDefaultWindowHints();
-        glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
-        glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE);
-        glfwWindowHint(GLFW.GLFW_VISIBLE, visible ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
+        glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
+        long temp = glfwCreateWindow(1, 1, "", NULL, NULL);
+        glfwMakeContextCurrent(temp);
+        createCapabilities();
+        GLCapabilities caps = getCapabilities();
+        glfwDestroyWindow(temp);
+
+        //set the actual window window hints
+        glfwDefaultWindowHints();
         glfwWindowHint(GLFW.GLFW_RESIZABLE, resizable ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
+        if(caps.OpenGL32){
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        }else if(caps.OpenGL21){
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        }else{
+            throw new RuntimeException("OpenGL is not supported, please update your graphics drivers.");
+        }
 
         //create the window and store its id in the variable id
         id = GLFW.glfwCreateWindow(width, height, title, fullscreen ? GLFW.glfwGetPrimaryMonitor() : NULL, NULL);
@@ -76,16 +93,15 @@ public class Window {
         //position the window in the center
         centerWindow();
 
-        //setup the resize callback listener to call the onResize function on resize
-        glfwSetFramebufferSizeCallback(getID(), (window, newWidth, newHeight)->{
-            if(window == getID()) onResize(newWidth, newHeight);
-        });
-
         glfwMakeContextCurrent(id);
 
-        createCapabilities();
-
         setVsync(vsync);
+
+        //setup the resize callback listener to call the onResize function on resize
+        glfwSetFramebufferSizeCallback(getID(), (window, newWidth, newHeight) -> {
+            if(window == getID())
+                onResize(newWidth, newHeight);
+        });
     }
 
     public void update(){
@@ -201,8 +217,10 @@ public class Window {
 
 
     public void destroy() {
+        glfwFreeCallbacks(getID());
         glfwDestroyWindow(getID());
-        errorCallback.free();
+        glfwTerminate();
+        glfwSetErrorCallback(null).free();
     }
 
     @FunctionalInterface

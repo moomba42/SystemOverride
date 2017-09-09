@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Engine implements Runnable{
@@ -43,7 +45,7 @@ public class Engine implements Runnable{
     }
 
     public void init(){
-        window = new Window(1000, 600, "System Override", true, false, false, true);
+        window = new Window(1000, 600, "System Override", false, false, true);
         window.init();
 
         inputManager = new InputManager(window);
@@ -126,8 +128,7 @@ public class Engine implements Runnable{
     private void update() {
         System.out.println("Update");
         if(window.shouldClose()){
-            running = false;
-            return;
+            dispose();
         }
 
         //update stuff here
@@ -198,6 +199,21 @@ public class Engine implements Runnable{
 
         entities.remove(entity);
         entityListeners.forEach(l -> l.entityRemoved(entity));
+    }
+
+    public void dispose(){
+        systems.forEach(EntitySystem::dispose);
+        renderer.dispose();
+        assetLoader.dispose();
+        window.destroy();
+
+        entityListeners.clear();
+        systems.clear();
+        familyMap.clear();
+        entities.clear();
+
+        paused = true;
+        running = false;
     }
 
 

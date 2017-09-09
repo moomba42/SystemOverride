@@ -8,33 +8,21 @@ import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
 
 import org.joml.Vector2d;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWCursorEnterCallback;
-import org.lwjgl.glfw.GLFWCursorPosCallback;
-import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.glfw.GLFWMouseButtonCallback;
-import org.lwjgl.glfw.GLFWScrollCallback;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class InputManager {
 
-    //callbacks
-    private GLFWKeyCallback keyCallback;
-    private GLFWMouseButtonCallback mouseCallback;
-    private GLFWCursorPosCallback posCallback;
-    private GLFWScrollCallback scrollCallback;
-    private GLFWCursorEnterCallback enterCallback;
-
-    //window listening on
-    private Window window;
+    //mainWindow listening on
+    private Window mainWindow;
 
     //state
     private Vector2d mousePosition;
     private Map<Key, Boolean> keyStates;
 
-    public InputManager(Window window){
-        this.window = window;
+    public InputManager(Window mainWindow){
+        this.mainWindow = mainWindow;
         mousePosition = new Vector2d();
         keyStates = new HashMap<>();
         for(Key key : Key.values()){
@@ -44,68 +32,47 @@ public class InputManager {
 
     //function for setting up callbacks
     public void init() {
-        glfwSetMouseButtonCallback(InputManager.this.window.getID(), mouseCallback = new GLFWMouseButtonCallback() {
-            @Override
-            public void invoke(long window, int button, int action, int mods) {
-                if(window == InputManager.this.window.getID()){
-                    switch(action) {
-                        case GLFW.GLFW_RELEASE:
-                            mouseButtonAction(button, false);
-                            break;
-                        case GLFW.GLFW_PRESS:
-                            mouseButtonAction(button, true);
-                            break;
-                        default:
-                    }
+        glfwSetMouseButtonCallback(mainWindow.getID(), (window, button, action, mods) ->{
+            if(window == mainWindow.getID()){
+                switch(action) {
+                    case GLFW.GLFW_RELEASE:
+                        mouseButtonAction(button, false);
+                        break;
+                    case GLFW.GLFW_PRESS:
+                        mouseButtonAction(button, true);
+                        break;
+                    default:
                 }
             }
         });
 
-        glfwSetCursorPosCallback(InputManager.this.window.getID(), posCallback = new GLFWCursorPosCallback() {
-            @Override
-            public void invoke(long window, double xpos, double ypos) {
-                if(window == InputManager.this.window.getID()){
-                    mousePosChanged(xpos, ypos);
+        glfwSetCursorPosCallback(mainWindow.getID(),(window, xPos, yPos)->{
+                if(window == mainWindow.getID())
+                    mousePosChanged(xPos, yPos);
+        });
+
+        glfwSetScrollCallback(mainWindow.getID(), (window, xOffset, yOffset) -> {
+            if(window == InputManager.this.mainWindow.getID()) mouseScrolled(xOffset, yOffset);
+        });
+
+        glfwSetCursorEnterCallback(mainWindow.getID(), (window, entered) -> {
+            if(window == mainWindow.getID()) mouseEntered(entered);
+        });
+
+        glfwSetKeyCallback(mainWindow.getID(), (window, keycode, scancode, action, mods) -> {
+            if(window == mainWindow.getID()){
+                Key key = Key.getKeyForGLWFKeycode(keycode, Key.KEY_UNKNOWN);
+                switch(action) {
+                    case GLFW.GLFW_RELEASE:
+                        key(key, false);
+                        break;
+                    case GLFW.GLFW_PRESS:
+                        key(key, true);
+                        break;
+                    default:
                 }
             }
         });
-
-        glfwSetScrollCallback(InputManager.this.window.getID(), scrollCallback = new GLFWScrollCallback() {
-            @Override
-            public void invoke(long window, double xoffset, double yoffset) {
-                if(window == InputManager.this.window.getID()){
-                    mouseScrolled(xoffset, yoffset);
-                }
-            }
-        });
-
-        glfwSetCursorEnterCallback(InputManager.this.window.getID(), enterCallback = new GLFWCursorEnterCallback() {
-            @Override
-            public void invoke(long window, boolean entered) {
-                if(window == InputManager.this.window.getID()){
-                    mouseEntered(entered);
-                }
-            }
-        });
-
-        //set the key callback to a callback that notifies the listeners assigned to this window
-        glfwSetKeyCallback(InputManager.this.window.getID(), (keyCallback = new GLFWKeyCallback() {
-            @Override
-            public void invoke(long window, int keycode, int scancode, int action, int mods) {
-                if(window == InputManager.this.window.getID()){
-                    Key key = Key.getKeyForGLWFKeycode(keycode, Key.KEY_UNKNOWN);
-                    switch(action) {
-                        case GLFW.GLFW_RELEASE:
-                            key(key, false);
-                            break;
-                        case GLFW.GLFW_PRESS:
-                            key(key, true);
-                            break;
-                        default:
-                    }
-                }
-            }
-        }));
     }
 
 
@@ -150,20 +117,8 @@ public class InputManager {
 
     }
 
-
-
-    //Other functions
-
-    public void dispose(){
-        keyCallback.free();
-        mouseCallback.free();
-        posCallback.free();
-        scrollCallback.free();
-        enterCallback.free();
-    }
-
-    public Window getWindow(){
-        return window;
+    public Window getMainWindow(){
+        return mainWindow;
     }
 
 }
