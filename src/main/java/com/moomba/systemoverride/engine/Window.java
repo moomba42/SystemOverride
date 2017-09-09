@@ -35,18 +35,20 @@ public class Window {
     private String title;
     private boolean visible, resizable, fullscreen, vsync;
 
-    private GLFWFramebufferSizeCallback resizeCallback;
     private List<ResizeListener> resizeListeners;
     GLFWErrorCallback errorCallback;
 
-    public void init(int width, int height, String title, boolean visible, boolean resizable, boolean fullscreen, boolean vsync){
+    public Window(int width, int height, String title, boolean visible, boolean resizable, boolean fullscreen, boolean vsync){
         this.width = width;
         this.height = height;
         this.title = title;
         this.visible = visible;
         this.resizable = resizable;
         this.fullscreen = fullscreen;
+        resizeListeners = new ArrayList<>();
+    }
 
+    public void init(){
         errorCallback = GLFWErrorCallback.createPrint();
         glfwSetErrorCallback(errorCallback);
 
@@ -65,37 +67,25 @@ public class Window {
         glfwWindowHint(GLFW.GLFW_RESIZABLE, resizable ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
 
         //create the window and store its id in the variable id
-        createWindow();
+        id = GLFW.glfwCreateWindow(width, height, title, fullscreen ? GLFW.glfwGetPrimaryMonitor() : NULL, NULL);
+        if (id == NULL){
+            glfwTerminate();
+            throw new RuntimeException("Failed to create the GLFW window");
+        }
 
         //position the window in the center
         centerWindow();
 
-        resizeCallback = new GLFWFramebufferSizeCallback() {
-            @Override
-            public void invoke(long window, int newWidth, int newHeight) {
-                if(window == getID()){
-                    onResize(newWidth, newHeight);
-                }
-            }
-        };
-        glfwSetFramebufferSizeCallback(getID(), resizeCallback);
-
-        resizeListeners = new ArrayList<ResizeListener>();
+        //setup the resize callback listener to call the onResize function on resize
+        glfwSetFramebufferSizeCallback(getID(), (window, newWidth, newHeight)->{
+            if(window == getID()) onResize(newWidth, newHeight);
+        });
 
         glfwMakeContextCurrent(id);
 
         createCapabilities();
 
         setVsync(vsync);
-    }
-
-    private void createWindow() {
-        //this lags
-        id = GLFW.glfwCreateWindow(width, height, title, fullscreen ? GLFW.glfwGetPrimaryMonitor() : NULL, NULL);
-        if (id == NULL){
-            glfwTerminate();
-            throw new RuntimeException("Failed to create the GLFW window");
-        }
     }
 
     public void update(){
@@ -107,14 +97,14 @@ public class Window {
         //get the current monitor video mode
         GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
 
-        //get this window's size
+        //get this window's size (no, you cant use the fields width & height - would cause problems with retina)
         IntBuffer w = BufferUtils.createIntBuffer(1);
         IntBuffer h = BufferUtils.createIntBuffer(1);
         glfwGetWindowSize(getID(), w, h);
         int width = w.get(0);
         int height = h.get(0);
 
-        //position it at the center of the screen
+        //position the window at the center of the screen
         glfwSetWindowPos(getID(), (vidmode.width() - width) / 2, (vidmode.height() - height) / 2);
     }
 
@@ -212,12 +202,12 @@ public class Window {
 
     public void destroy() {
         glfwDestroyWindow(getID());
-        resizeCallback.free();
+        errorCallback.free();
     }
 
     @FunctionalInterface
     public interface ResizeListener {
-        public void onResize(int width, int height);
+        void onResize(int width, int height);
     }
 
 }

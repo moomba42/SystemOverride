@@ -35,16 +35,16 @@ public class Engine implements Runnable{
     private Window window;
 
     public Engine(){
-        systems = new ArrayList<EntitySystem>();
-        entities = new ArrayList<Entity>();
-        familyMap = new HashMap<Family, List<Entity>>();
+        systems = new ArrayList<>();
+        entities = new ArrayList<>();
+        familyMap = new HashMap<>();
 
-        entityListeners = new ArrayList<EntityListener>();
+        entityListeners = new ArrayList<>();
     }
 
     public void init(){
-        window = new Window();
-        window.init(1000, 600, "System Override", true, false, false, true);
+        window = new Window(1000, 600, "System Override", true, false, false, true);
+        window.init();
 
         inputManager = new InputManager(window);
         inputManager.init();
@@ -52,7 +52,7 @@ public class Engine implements Runnable{
         renderer = new Renderer();
         assetLoader = new AssetLoader();
 
-        systems.forEach(system -> system.init());
+        systems.forEach(EntitySystem::init);
     }
 
     public void start(){
@@ -113,7 +113,9 @@ public class Engine implements Runnable{
                     //On some systems this can cause pretty bad stuttering but helps reducing the cpu usage.
                     try {
                         Thread.sleep(1);
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     now = System.nanoTime();
                 }
