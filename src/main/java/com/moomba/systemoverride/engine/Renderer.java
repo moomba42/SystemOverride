@@ -1,7 +1,5 @@
 package com.moomba.systemoverride.engine;
 
-import static org.lwjgl.opengl.GL11.*;
-
 public class Renderer {
 
     private Shader shader;
@@ -18,13 +16,19 @@ public class Renderer {
                 0.0f,  1.0f, 0.0f,
         };
 
+        float[] colors = {
+                1.0f, 0.0f, 0.0f,
+                0.0f, 1.0f, 0.0f,
+                0.0f, 0.0f, 1.0f,
+        };
+
 
         try {
             shader = new DefaultShader();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        testModel = new Model3D(positions);
+        testModel = new Model3D(positions, colors);
         testModel.uploadToGPU();
     }
 
