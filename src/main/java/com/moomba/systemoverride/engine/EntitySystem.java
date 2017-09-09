@@ -9,4 +9,6 @@ public interface EntitySystem {
     Family getFamily();
 
     void process(List<Entity> entities);
+
+    void dispose();
 }
