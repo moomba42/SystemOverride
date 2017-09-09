@@ -1,6 +1,7 @@
 #version 330 core
 
 in vec3 pass_color;
+in vec3 pass_normal;
 
 out vec4 fragColor;
 

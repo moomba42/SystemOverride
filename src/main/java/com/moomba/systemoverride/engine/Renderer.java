@@ -16,6 +16,12 @@ public class Renderer {
                 0.0f,  1.0f, 0.0f,
         };
 
+        float[] normals = {
+                0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 1.0f,
+        };
+
         float[] colors = {
                 1.0f, 0.0f, 0.0f,
                 0.0f, 1.0f, 0.0f,
@@ -28,7 +34,7 @@ public class Renderer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        testModel = new Model3D(positions, colors);
+        testModel = new Model3D(positions, normals, colors);
         testModel.uploadToGPU();
     }
 
