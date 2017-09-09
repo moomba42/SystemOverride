@@ -1,6 +1,4 @@
 package com.moomba.systemoverride.engine;
 
-public class SOEngine {
-
-
+public class AssetLoader {
 }
