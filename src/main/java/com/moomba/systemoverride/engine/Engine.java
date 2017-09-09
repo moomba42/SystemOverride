@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.lwjgl.opengl.GL11.*;
+
 public class Engine implements Runnable{
 
     final double TARGET_UPS = 30.0;//UPDATES PER SECOND
@@ -29,6 +31,8 @@ public class Engine implements Runnable{
 
     private Renderer renderer;
     private AssetLoader assetLoader;
+    private InputManager inputManager;
+    private Window window;
 
     public Engine(){
         systems = new ArrayList<EntitySystem>();
@@ -39,10 +43,16 @@ public class Engine implements Runnable{
     }
 
     public void init(){
+        window = new Window();
+        window.init(1000, 600, "System Override", true, false, false, true);
+
+        inputManager = new InputManager(window);
+        inputManager.init();
+
         renderer = new Renderer();
         assetLoader = new AssetLoader();
 
-        systems.forEach(system -> system.initialize());
+        systems.forEach(system -> system.init());
     }
 
     public void start(){
@@ -50,6 +60,8 @@ public class Engine implements Runnable{
     }
 
     public void run() {
+        init();
+
         running = true;
         paused = false;
 
@@ -111,10 +123,23 @@ public class Engine implements Runnable{
 
     private void update() {
         System.out.println("Update");
+        if(window.shouldClose()){
+            running = false;
+            return;
+        }
+
+        //update stuff here
     }
 
     private void render() {
         System.out.println("Render");
+
+        glClearColor(0f, 0f, 0f, 1f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        //render stuff here
+
+        window.update();
     }
 
     public int getFPS(){

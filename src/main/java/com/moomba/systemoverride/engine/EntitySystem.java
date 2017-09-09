@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface EntitySystem {
 
-    void initialize();
+    void init();
 
     Family getFamily();
 
