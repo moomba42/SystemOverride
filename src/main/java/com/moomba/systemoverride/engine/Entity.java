@@ -9,7 +9,7 @@ public class Entity {
     private Map<Class<? extends Component>, Component> components;
     private List<ComponentListener> listeners;
 
-    private Entity(){
+    public Entity(){
         components = new HashMap<>();
         listeners = new ArrayList<ComponentListener>();
     }

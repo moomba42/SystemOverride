@@ -51,7 +51,8 @@ public class Engine implements Runnable{
         inputManager = new InputManager(window);
         inputManager.init();
 
-        renderer = new Renderer();
+        renderer = new Renderer(1000, 600);
+        window.addResizeListener(renderer);
         renderer.init();
         assetLoader = new AssetLoader();
 

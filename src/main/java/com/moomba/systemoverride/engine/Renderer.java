@@ -1,11 +1,20 @@
 package com.moomba.systemoverride.engine;
 
-public class Renderer {
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
-    private Shader shader;
-    private Model3D testModel;
+public class Renderer implements Window.ResizeListener{
 
-    public Renderer(){
+    private DefaultShader shader;
+    private Entity entity;
+    private Entity camera;
+
+    //TODO: Remove (for testing purposes)
+    private int width, height;
+
+    public Renderer(int width, int height){
+        this.width = width;
+        this.height = height;
     }
 
     public void init(){
@@ -34,17 +43,52 @@ public class Renderer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        testModel = new Model3D(positions, normals, colors);
+        Model3D testModel = new Model3D(positions, normals, colors);
         testModel.uploadToGPU();
+
+        MeshComponent meshComponent = new MeshComponent(testModel);
+        TransformComponent transformComponent = new TransformComponent();
+        entity = new Entity();
+        entity.addComponent(transformComponent);
+        entity.addComponent(meshComponent);
+
+        TransformComponent transformComponentCam = new TransformComponent();
+        CameraComponent cameraComponent = new CameraComponent(true, 50, width, height, 0.0001, 1000);
+        camera = new Entity();
+        camera.addComponent(transformComponentCam);
+        camera.addComponent(cameraComponent);
     }
 
 
     public void render(){
+
+        System.out.println("########################### RENDER CALL #############################");
+        System.out.println("ENTITY POS: "+entity.getComponent(TransformComponent.class).getPosition());
+        System.out.println("CAMERA POS: "+camera.getComponent(TransformComponent.class).getPosition());
+        System.out.println("#####################################################################");
+        System.out.println("");
+
+        entity.getComponent(TransformComponent.class).getRotation().y = (float) (Math.toRadians(180)*(Math.sin(((double)System.currentTimeMillis())/1000.0)));
+        camera.getComponent(TransformComponent.class).getPosition().z = -5;
+
+        Matrix4f model = entity.getComponent(TransformComponent.class).asTransformMatrix();
+        Matrix4f view = camera.getComponent(TransformComponent.class).asTransformMatrix();
+        Matrix4f projection = camera.getComponent(CameraComponent.class).getProjectionMatrix();
+
+
         shader.use();
-        testModel.render();
+        shader.uploadMVPMatrix(model, view, projection);
+        entity.getComponent(MeshComponent.class).getMesh().render();
     }
 
     public void dispose() {
-        testModel.dispose();
+        entity.getComponent(MeshComponent.class).getMesh().dispose();
+    }
+
+    //TODO: Remove (for testing purposes)
+    @Override
+    public void onResize(int width, int height) {
+        this.width = width;
+        this.height = height;
     }
 }
