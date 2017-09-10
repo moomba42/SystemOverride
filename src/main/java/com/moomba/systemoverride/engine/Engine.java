@@ -5,11 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
-import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.opengl.GL11.*;
 
-public class Engine implements Runnable{
+public class Engine{
 
     final double TARGET_UPS = 30.0;//UPDATES PER SECOND
     final double TIME_BETWEEN_UPDATES = 1000000000 / TARGET_UPS;
@@ -44,27 +42,34 @@ public class Engine implements Runnable{
         entityListeners = new ArrayList<>();
     }
 
-    public void init(){
+    private void init(Scene scene){
         window = new Window(1000, 600, "System Override", false, false, true);
         window.init();
+        window.lockMouse();
 
         inputManager = new InputManager(window);
         inputManager.init();
 
-        renderer = new Renderer(1000, 600);
-        window.addResizeListener(renderer);
+        renderer = new Renderer();
         renderer.init();
         assetLoader = new AssetLoader();
 
-        systems.forEach(EntitySystem::init);
+        createBuiltInSystems();
+
+        scene.init(this, assetLoader);
+
+        systems.forEach(system -> {
+            system.init(assetLoader);
+        });
     }
 
-    public void start(){
-        new Thread(this).start();
+    private void createBuiltInSystems() {
+        addSystem(new MeshRenderSystem());
+        addSystem(new CameraSystem());
     }
 
-    public void run() {
-        init();
+    public void start(Scene scene) {
+        init(scene);
 
         running = true;
         paused = false;
@@ -132,6 +137,10 @@ public class Engine implements Runnable{
             dispose();
         }
 
+        systems.forEach(system -> {
+            system.update(familyMap.get(system.getFamily()), inputManager);
+        });
+
         //update stuff here
     }
 
@@ -140,6 +149,9 @@ public class Engine implements Runnable{
         glClearColor(0f, 0f, 0f, 1f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        systems.forEach(system -> {
+            system.render(familyMap.get(system.getFamily()), renderer);
+        });
         renderer.render();
 
         window.update();
@@ -200,6 +212,8 @@ public class Engine implements Runnable{
         entities.remove(entity);
         entityListeners.forEach(l -> l.entityRemoved(entity));
     }
+
+
 
     public void dispose(){
         systems.forEach(EntitySystem::dispose);

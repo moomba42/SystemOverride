@@ -4,11 +4,13 @@ import java.util.List;
 
 public interface EntitySystem {
 
-    void init();
+    void init(AssetLoader loader);
 
     Family getFamily();
 
-    void process(List<Entity> entities);
+    void update(List<Entity> entities, InputManager inputManager);
+
+    void render(List<Entity> entities, Renderer renderer);
 
     void dispose();
 }

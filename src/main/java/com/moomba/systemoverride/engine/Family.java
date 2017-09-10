@@ -14,23 +14,26 @@ public class Family {
         includesOneOf = new ArrayList<>();
     }
 
-    public void includes(Class<? extends Component>... components){
+    public Family includes(Class<? extends Component>... components){
         includes.clear();
         for (Class<? extends Component> component : components)
             includes.add(component);
+        return this;
     }
 
-    public void excludes(Class<? extends Component>... components){
+    public Family excludes(Class<? extends Component>... components){
         excludes.clear();
         for (Class<? extends Component> component : components)
             excludes.add(component);
+        return this;
 
     }
 
-    public void includesOneOf(Class<? extends Component>... components){
+    public Family includesOneOf(Class<? extends Component>... components){
         includesOneOf.clear();
         for (Class<? extends Component> component : components)
             includesOneOf.add(component);
+        return this;
 
     }
 

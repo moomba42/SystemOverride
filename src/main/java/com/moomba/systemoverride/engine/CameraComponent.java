@@ -61,6 +61,30 @@ public class CameraComponent extends Component{
         notifyListeners();
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public double getFieldOfViewDeg() {
+        return fieldOfViewDeg;
+    }
+
+    public double getNearPlane() {
+        return nearPlane;
+    }
+
+    public double getFarPlane() {
+        return farPlane;
+    }
+
+    public double getScreenWidth() {
+        return screenWidth;
+    }
+
+    public double getScreenHeight() {
+        return screenHeight;
+    }
+
     private void calculateProjectionMatrix(){
         double aspectRatio = screenWidth / screenHeight;
         double yScale = cotangent(Math.toRadians(fieldOfViewDeg / 2.0));

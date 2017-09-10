@@ -19,9 +19,14 @@ public class DefaultShader extends Shader{
         projection_matrix_location = getUniformLocation("projection_matrix");
     }
 
-    public void uploadMVPMatrix(Matrix4f model, Matrix4f view, Matrix4f projection){
+    public void uploadModelMatrix(Matrix4f model){
         loadMatrix(model_matrix_location, model);
+    }
+    public void uploadViewMatrix(Matrix4f view){
         loadMatrix(view_matrix_location, view);
+    }
+
+    public void uploadProjectionMatrix(Matrix4f projection){
         loadMatrix(projection_matrix_location, projection);
     }
 }

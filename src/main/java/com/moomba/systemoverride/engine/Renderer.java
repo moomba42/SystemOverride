@@ -2,96 +2,64 @@ package com.moomba.systemoverride.engine;
 
 import org.joml.Matrix4f;
 
-public class Renderer implements Window.ResizeListener{
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Renderer{
 
     private DefaultShader shader;
-    private Entity entity;
-    private Entity camera;
+    Matrix4f viewMatrix;
+    Matrix4f projectionMatrix;
+    private Map<Mesh, List<Matrix4f>> meshesToRender;
 
-    //TODO: Remove (for testing purposes)
-    private int width, height;
-
-    public Renderer(int width, int height){
-        this.width = width;
-        this.height = height;
+    public Renderer(){
+        viewMatrix = new Matrix4f().identity();
+        projectionMatrix = new Matrix4f().identity();
+        meshesToRender = new HashMap<>();
     }
 
     public void init(){
-
-        float[] positions = {
-                -1.0f, -1.0f, 0.0f,
-                 1.0f, -1.0f, 0.0f,
-                 1.0f,  1.0f, 0.0f,
-                -1.0f,  1.0f, 0.0f,
-        };
-
-        float[] normals = {
-                0.0f, 0.0f, 1.0f,
-                0.0f, 0.0f, 1.0f,
-                0.0f, 0.0f, 1.0f,
-                0.0f, 0.0f, 1.0f
-        };
-
-        float[] colors = {
-                1.0f, 0.0f, 0.0f,
-                0.0f, 1.0f, 0.0f,
-                0.0f, 0.0f, 1.0f,
-                1.0f, 0.0f, 1.0f
-        };
-
-        int[] indices = {
-                0,1,2,
-                0,2,3
-        };
-
-
         try {
             shader = new DefaultShader();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Mesh testModel = new Mesh(positions, normals, colors, indices);
-        testModel.uploadToGPU();
-
-        MeshComponent meshComponent = new MeshComponent(testModel);
-        TransformComponent transformComponent = new TransformComponent();
-        entity = new Entity();
-        entity.addComponent(transformComponent);
-        entity.addComponent(meshComponent);
-
-        TransformComponent transformComponentCam = new TransformComponent();
-        CameraComponent cameraComponent = new CameraComponent(true, 50, width, height, 0.0001, 1000);
-        camera = new Entity();
-        camera.addComponent(transformComponentCam);
-        camera.addComponent(cameraComponent);
     }
 
+    public void queueMesh(Mesh mesh, Matrix4f transform){
+        if(!meshesToRender.containsKey(mesh))
+            meshesToRender.put(mesh, new ArrayList<>());
+        meshesToRender.get(mesh).add(transform);
+    }
+
+    public void loadProjectionMatrix(Matrix4f projectionMatrix){
+        this.projectionMatrix = projectionMatrix;
+        shader.use();
+        shader.uploadProjectionMatrix(projectionMatrix);
+    }
+
+    public void loadViewMatrix(Matrix4f viewMatrix){
+        this.viewMatrix = viewMatrix;
+        shader.use();
+        shader.uploadViewMatrix(viewMatrix);
+    }
 
     public void render(){
-
-        entity.getComponent(TransformComponent.class).getRotation().rotateY(0.01f);
-        camera.getComponent(TransformComponent.class).getPosition().z = -5;
-
-        Matrix4f model = entity.getComponent(TransformComponent.class).asTransformMatrix();
-        Matrix4f view = camera.getComponent(TransformComponent.class).asTransformMatrix();
-        Matrix4f projection = camera.getComponent(CameraComponent.class).getProjectionMatrix();
-
         shader.use();
-        shader.uploadMVPMatrix(model, view, projection);
-        Mesh mesh = entity.getComponent(MeshComponent.class).getMesh();
-        mesh.bind();
-        mesh.render();
-        mesh.unbind();
+        meshesToRender.forEach((mesh, transforms)->{
+            mesh.bind();
+            transforms.forEach(transform ->{
+                shader.uploadModelMatrix(transform);
+                mesh.render();
+            });
+            mesh.unbind();
+        });
+        meshesToRender.clear();
     }
 
     public void dispose() {
-        entity.getComponent(MeshComponent.class).getMesh().dispose();
-    }
-
-    //TODO: Remove (for testing purposes)
-    @Override
-    public void onResize(int width, int height) {
-        this.width = width;
-        this.height = height;
+        shader.dispose();
     }
 }

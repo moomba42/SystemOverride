@@ -109,7 +109,7 @@ public class Shader {
     /**
      * Destroy this shader program.
      */
-    public void destroy() {
+    public void dispose() {
         glDeleteProgram(program);
     }
 
