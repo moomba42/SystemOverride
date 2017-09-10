@@ -16,10 +16,21 @@ public class SOGame implements Scene{
     public void init(Engine engine, AssetLoader loader) {
         this.engine = engine;
 
-        addAxes(0, 0, 0, 1);
+        addAxes(0, 0, 0, 3);
         addCamera(2, 2, 2);
+        addCube(0, 0, 0, 1, 1, 0, 1);
 
         engine.addSystem(new CameraMovementSystem());
+    }
+
+    private void addCube(int x, int y, int z, int size, int r, int g, int b) {
+        MeshComponent meshComponent = new MeshComponent(MeshBuilder.cube(size, r, g, b));
+        TransformComponent transformComponent = new TransformComponent();
+        transformComponent.getPosition().set(x, y, z);
+        Entity entity = new Entity();
+        entity.addComponent(transformComponent);
+        entity.addComponent(meshComponent);
+        engine.addEntity(entity);
     }
 
     private void addCamera(float x, float y, float z) {
