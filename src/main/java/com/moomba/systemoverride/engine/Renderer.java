@@ -1,7 +1,6 @@
 package com.moomba.systemoverride.engine;
 
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 public class Renderer implements Window.ResizeListener{
 
@@ -51,7 +50,7 @@ public class Renderer implements Window.ResizeListener{
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Model3D testModel = new Model3D(positions, normals, colors, indices);
+        Mesh testModel = new Mesh(positions, normals, colors, indices);
         testModel.uploadToGPU();
 
         MeshComponent meshComponent = new MeshComponent(testModel);
@@ -79,7 +78,7 @@ public class Renderer implements Window.ResizeListener{
 
         shader.use();
         shader.uploadMVPMatrix(model, view, projection);
-        Model3D mesh = entity.getComponent(MeshComponent.class).getMesh();
+        Mesh mesh = entity.getComponent(MeshComponent.class).getMesh();
         mesh.bind();
         mesh.render();
         mesh.unbind();

@@ -14,7 +14,7 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-public class Model3D {
+public class Mesh {
 
     private float[] positions;
     private float[] normals;
@@ -29,7 +29,7 @@ public class Model3D {
     private int vaoID;
 
 
-    public Model3D(float[] positions, float[] normals, float[] colors, int[] indices) {
+    public Mesh(float[] positions, float[] normals, float[] colors, int[] indices) {
         this.positions = positions;
         this.normals = normals;
         this.colors = colors;

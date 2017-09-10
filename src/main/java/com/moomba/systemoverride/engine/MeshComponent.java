@@ -1,17 +1,17 @@
 package com.moomba.systemoverride.engine;
 
 public class MeshComponent extends Component{
-    private Model3D mesh;
+    private Mesh mesh;
 
-    public MeshComponent(Model3D mesh) {
+    public MeshComponent(Mesh mesh) {
         this.mesh = mesh;
     }
 
-    public Model3D getMesh() {
+    public Mesh getMesh() {
         return mesh;
     }
 
-    public void setMesh(Model3D mesh) {
+    public void setMesh(Mesh mesh) {
         this.mesh = mesh;
         notifyListeners();
     }
