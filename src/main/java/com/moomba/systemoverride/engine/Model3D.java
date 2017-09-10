@@ -3,6 +3,7 @@ package com.moomba.systemoverride.engine;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
@@ -17,17 +18,20 @@ public class Model3D {
     private float[] positions;
     private float[] normals;
     private float[] colors;
+    private int[] indices;
     private int positionBufferID;
     private int normalBufferID;
     private int colorBufferID;
+    private int indiceBufferID;
 
     private int vaoID;
 
 
-    public Model3D(float[] positions, float[] normals, float[] colors) {
+    public Model3D(float[] positions, float[] normals, float[] colors, int[] indices) {
         this.positions = positions;
         this.normals = normals;
         this.colors = colors;
+        this.indices = indices;
     }
 
     public void render(){
@@ -36,7 +40,13 @@ public class Model3D {
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
 
-        glDrawArrays(GL_TRIANGLES, 0, positions.length/3);
+        //glDrawArrays(GL_TRIANGLES, 0, positions.length/3);
+        glDrawElements(
+                GL_TRIANGLES,
+                indices.length,
+                GL_UNSIGNED_INT,
+                0
+        );
 
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
@@ -74,6 +84,14 @@ public class Model3D {
         glBindBuffer(GL_ARRAY_BUFFER, colorBufferID);
         glBufferData(GL_ARRAY_BUFFER, colorBuffer, GL_STATIC_DRAW);
         glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
+
+        //Indices attribute
+        IntBuffer indiceBuffer = BufferUtils.createIntBuffer(indices.length);
+        indiceBuffer.put(indices).flip();
+
+        indiceBufferID = glGenBuffers();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indiceBufferID);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indiceBuffer, GL_STATIC_DRAW);
 
         glBindVertexArray(0);
     }

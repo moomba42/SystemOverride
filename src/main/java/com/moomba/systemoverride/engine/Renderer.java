@@ -21,20 +21,28 @@ public class Renderer implements Window.ResizeListener{
 
         float[] positions = {
                 -1.0f, -1.0f, 0.0f,
-                1.0f, -1.0f, 0.0f,
-                0.0f,  1.0f, 0.0f,
+                 1.0f, -1.0f, 0.0f,
+                 1.0f,  1.0f, 0.0f,
+                -1.0f,  1.0f, 0.0f,
         };
 
         float[] normals = {
                 0.0f, 0.0f, 1.0f,
                 0.0f, 0.0f, 1.0f,
                 0.0f, 0.0f, 1.0f,
+                0.0f, 0.0f, 1.0f
         };
 
         float[] colors = {
                 1.0f, 0.0f, 0.0f,
                 0.0f, 1.0f, 0.0f,
                 0.0f, 0.0f, 1.0f,
+                1.0f, 0.0f, 1.0f
+        };
+
+        int[] indices = {
+                0,1,2,
+                0,2,3
         };
 
 
@@ -43,7 +51,7 @@ public class Renderer implements Window.ResizeListener{
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Model3D testModel = new Model3D(positions, normals, colors);
+        Model3D testModel = new Model3D(positions, normals, colors, indices);
         testModel.uploadToGPU();
 
         MeshComponent meshComponent = new MeshComponent(testModel);
