@@ -24,11 +24,23 @@ public class SOGame implements Scene{
         addAxes(0, 0, 0, 3);
         addCamera(2, 2, 2);
         addCube(0, 0, 0, 1, 1, 0, 1);
+        addTerrain(0, 0, 0, 10, 16884);
 
         engine.addSystem(new CameraMovementSystem());
     }
 
-    private void addCube(int x, int y, int z, int size, int r, int g, int b) {
+    private void addTerrain(float posX, float posY, float posZ, float size, int seed) {
+        SimplexNoiseGenerator generator = new SimplexNoiseGenerator(seed);
+        DualContourer dualContourer = new DualContourer((x, y, z) -> (float) generator.noise(x, y, z));
+        Octree octree = new Octree(size);
+        octree.subdivide();
+        octree.subdivide();
+        octree.subdivide();
+        octree.subdivide();
+        Mesh mesh = dualContourer.contoure(octree);
+    }
+
+    private void addCube(float x, float y, float z, float size, float r, float g, float b) {
         MeshComponent meshComponent = new MeshComponent(MeshBuilder.cube(size, r, g, b));
         TransformComponent transformComponent = new TransformComponent();
         transformComponent.getPosition().set(x, y, z);

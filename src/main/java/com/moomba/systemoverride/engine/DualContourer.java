@@ -2,7 +2,14 @@ package com.moomba.systemoverride.engine;
 
 public class DualContourer {
 
-    public Mesh contoure(Sampler sampler, float size){
+    private Sampler sampler;
+
+    public DualContourer(Sampler sampler){
+        this.sampler = sampler;
+    }
+
+    public Mesh contoure(Octree octree){
+
 
         return null;
     }
