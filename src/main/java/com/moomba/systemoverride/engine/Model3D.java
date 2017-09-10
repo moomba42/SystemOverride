@@ -15,14 +15,16 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class Model3D {
+
     private float[] positions;
     private float[] normals;
     private float[] colors;
     private int[] indices;
+
     private int positionBufferID;
     private int normalBufferID;
     private int colorBufferID;
-    private int indiceBufferID;
+    private int indexBufferID;
 
     private int vaoID;
 
@@ -86,18 +88,18 @@ public class Model3D {
         glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
 
         //Indices attribute
-        IntBuffer indiceBuffer = BufferUtils.createIntBuffer(indices.length);
-        indiceBuffer.put(indices).flip();
+        IntBuffer indexBuffer = BufferUtils.createIntBuffer(indices.length);
+        indexBuffer.put(indices).flip();
 
-        indiceBufferID = glGenBuffers();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indiceBufferID);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indiceBuffer, GL_STATIC_DRAW);
+        indexBufferID = glGenBuffers();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
 
         glBindVertexArray(0);
     }
 
     public void dispose(){
         glDeleteVertexArrays(vaoID);
-        glDeleteBuffers(new int[]{positionBufferID});
+        glDeleteBuffers(new int[]{positionBufferID, normalBufferID, colorBufferID, indexBufferID});
     }
 }
