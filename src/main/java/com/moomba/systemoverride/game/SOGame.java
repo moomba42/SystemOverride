@@ -4,6 +4,8 @@ import com.moomba.systemoverride.engine.*;
 
 public class SOGame implements Scene{
 
+    private Engine engine;
+
     public static void main(String[] args){
         System.out.println("Starting System Override");
         Engine engine = new Engine();
@@ -12,53 +14,31 @@ public class SOGame implements Scene{
 
     @Override
     public void init(Engine engine, AssetLoader loader) {
-        float[] positions = {
-                -1.0f, -1.0f, 0.0f,
-                1.0f, -1.0f, 0.0f,
-                1.0f,  1.0f, 0.0f,
-                -1.0f,  1.0f, 0.0f,
-        };
+        this.engine = engine;
 
-        float[] normals = {
-                0.0f, 0.0f, 1.0f,
-                0.0f, 0.0f, 1.0f,
-                0.0f, 0.0f, 1.0f,
-                0.0f, 0.0f, 1.0f
-        };
+        addAxes(0, 0, 0, 1);
+        addCamera(2, 2, 2);
 
-        float[] colors = {
-                1.0f, 0.0f, 0.0f,
-                0.0f, 1.0f, 0.0f,
-                0.0f, 0.0f, 1.0f,
-                1.0f, 0.0f, 1.0f
-        };
+        engine.addSystem(new CameraMovementSystem());
+    }
 
-        int[] indices = {
-                0,1,2,
-                0,2,3
-        };
-
-        Mesh testModel = new Mesh(positions, normals, colors, indices);
-        testModel.uploadToGPU();
-
-        MeshComponent meshComponent = new MeshComponent(testModel);
-        TransformComponent transformComponent = new TransformComponent();
-        transformComponent.getPosition().set(0, 0,-2);
-        Entity entity = new Entity();
-        entity.addComponent(transformComponent);
-        entity.addComponent(meshComponent);
-
+    private void addCamera(float x, float y, float z) {
         TransformComponent transformComponentCam = new TransformComponent();
-        transformComponentCam.getPosition().z = 0;
+        transformComponentCam.getPosition().set(x, y, z);
         CameraComponent cameraComponent = new CameraComponent(true, 50, 1000, 600, 0.0001, 1000);
         Entity camera = new Entity();
         camera.addComponent(transformComponentCam);
         camera.addComponent(cameraComponent);
-
-        engine.addEntity(entity);
         engine.addEntity(camera);
+    }
 
-
-        engine.addSystem(new CameraMovementSystem());
+    private void addAxes(float x, float y, float z, float size) {
+        MeshComponent meshComponent = new MeshComponent(MeshBuilder.axes(size));
+        TransformComponent transformComponent = new TransformComponent();
+        transformComponent.getPosition().set(x, y, z);
+        Entity entity = new Entity();
+        entity.addComponent(transformComponent);
+        entity.addComponent(meshComponent);
+        engine.addEntity(entity);
     }
 }

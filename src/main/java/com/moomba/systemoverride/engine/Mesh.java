@@ -80,7 +80,7 @@ public class Mesh {
         normalBufferID = glGenBuffers();
         glBindBuffer(GL_ARRAY_BUFFER, normalBufferID);
         glBufferData(GL_ARRAY_BUFFER, normalBuffer, GL_STATIC_DRAW);
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, true, 0, 0);
 
         //Color attribute
         FloatBuffer colorBuffer = BufferUtils.createFloatBuffer(colors.length);

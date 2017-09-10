@@ -26,7 +26,7 @@ public class CameraSystem implements EntitySystem{
     public void render(List<Entity> entities, Renderer renderer) {
         entities.forEach(camera -> {
             if(camera.getComponent(CameraComponent.class).isActive()){
-                renderer.loadViewMatrix(camera.getComponent(TransformComponent.class).asTransformMatrix());
+                renderer.loadViewMatrix(camera.getComponent(TransformComponent.class).asTransformMatrix().invert());
                 if(camera != previousCamera) {
                     renderer.loadProjectionMatrix(camera.getComponent(CameraComponent.class).getProjectionMatrix());
                     previousCamera = camera;

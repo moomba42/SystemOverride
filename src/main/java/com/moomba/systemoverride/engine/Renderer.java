@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.lwjgl.opengl.GL11.*;
+
 public class Renderer{
 
     private DefaultShader shader;
@@ -47,6 +49,9 @@ public class Renderer{
     }
 
     public void render(){
+        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         shader.use();
         meshesToRender.forEach((mesh, transforms)->{
             mesh.bind();
