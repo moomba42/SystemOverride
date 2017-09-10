@@ -62,19 +62,12 @@ public class Renderer implements Window.ResizeListener{
 
     public void render(){
 
-        System.out.println("########################### RENDER CALL #############################");
-        System.out.println("ENTITY POS: "+entity.getComponent(TransformComponent.class).getPosition());
-        System.out.println("CAMERA POS: "+camera.getComponent(TransformComponent.class).getPosition());
-        System.out.println("#####################################################################");
-        System.out.println("");
-
-        entity.getComponent(TransformComponent.class).getRotation().y = (float) (Math.toRadians(180)*(Math.sin(((double)System.currentTimeMillis())/1000.0)));
+        entity.getComponent(TransformComponent.class).getRotation().rotateY(0.01f);
         camera.getComponent(TransformComponent.class).getPosition().z = -5;
 
         Matrix4f model = entity.getComponent(TransformComponent.class).asTransformMatrix();
         Matrix4f view = camera.getComponent(TransformComponent.class).asTransformMatrix();
         Matrix4f projection = camera.getComponent(CameraComponent.class).getProjectionMatrix();
-
 
         shader.use();
         shader.uploadMVPMatrix(model, view, projection);
