@@ -1,8 +1,9 @@
-package com.moomba.systemoverride.engine;
+package com.moomba.systemoverride.engine.entities.components;
 
+import com.moomba.systemoverride.engine.entities.Component;
 import org.joml.Matrix4f;
 
-public class CameraComponent extends Component{
+public class CameraComponent extends Component {
     private boolean active;
 
     private double fieldOfViewDeg;// in degrees

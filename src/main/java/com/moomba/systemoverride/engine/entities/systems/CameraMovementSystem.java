@@ -1,11 +1,19 @@
-package com.moomba.systemoverride.engine;
+package com.moomba.systemoverride.engine.entities.systems;
 
-import org.joml.Quaternionf;
+import com.moomba.systemoverride.engine.AssetLoader;
+import com.moomba.systemoverride.engine.Family;
+import com.moomba.systemoverride.engine.Renderer;
+import com.moomba.systemoverride.engine.entities.Entity;
+import com.moomba.systemoverride.engine.entities.EntitySystem;
+import com.moomba.systemoverride.engine.entities.components.CameraComponent;
+import com.moomba.systemoverride.engine.entities.components.TransformComponent;
+import com.moomba.systemoverride.engine.input.InputManager;
+import com.moomba.systemoverride.engine.input.Key;
 import org.joml.Vector3f;
 
 import java.util.List;
 
-public class CameraMovementSystem implements EntitySystem{
+public class CameraMovementSystem implements EntitySystem {
 
     private static final Family family = new Family().includes(CameraComponent.class, TransformComponent.class);
 

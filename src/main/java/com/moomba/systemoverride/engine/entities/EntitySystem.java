@@ -1,4 +1,9 @@
-package com.moomba.systemoverride.engine;
+package com.moomba.systemoverride.engine.entities;
+
+import com.moomba.systemoverride.engine.AssetLoader;
+import com.moomba.systemoverride.engine.Family;
+import com.moomba.systemoverride.engine.Renderer;
+import com.moomba.systemoverride.engine.input.InputManager;
 
 import java.util.List;
 

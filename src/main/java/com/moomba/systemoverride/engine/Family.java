@@ -1,5 +1,8 @@
 package com.moomba.systemoverride.engine;
 
+import com.moomba.systemoverride.engine.entities.Component;
+import com.moomba.systemoverride.engine.entities.Entity;
+
 import java.util.ArrayList;
 import java.util.List;
 

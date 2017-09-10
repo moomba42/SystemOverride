@@ -1,10 +1,11 @@
-package com.moomba.systemoverride.engine;
+package com.moomba.systemoverride.engine.entities.components;
 
+import com.moomba.systemoverride.engine.entities.Component;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public class TransformComponent extends Component{
+public class TransformComponent extends Component {
     private Vector3f position;
     private Quaternionf rotation;
     private Vector3f scale;

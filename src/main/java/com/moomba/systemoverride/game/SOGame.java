@@ -1,6 +1,11 @@
 package com.moomba.systemoverride.game;
 
 import com.moomba.systemoverride.engine.*;
+import com.moomba.systemoverride.engine.entities.*;
+import com.moomba.systemoverride.engine.entities.components.CameraComponent;
+import com.moomba.systemoverride.engine.entities.components.MeshComponent;
+import com.moomba.systemoverride.engine.entities.components.TransformComponent;
+import com.moomba.systemoverride.engine.entities.systems.CameraMovementSystem;
 
 public class SOGame implements Scene{
 

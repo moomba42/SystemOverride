@@ -1,4 +1,4 @@
-package com.moomba.systemoverride.engine;
+package com.moomba.systemoverride.engine.entities;
 
 public interface ComponentListener {
     void componentAdded(Component component);

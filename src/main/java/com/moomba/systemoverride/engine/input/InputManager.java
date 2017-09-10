@@ -1,4 +1,4 @@
-package com.moomba.systemoverride.engine;
+package com.moomba.systemoverride.engine.input;
 
 import static org.lwjgl.glfw.GLFW.glfwSetCursorEnterCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
@@ -6,6 +6,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
 
+import com.moomba.systemoverride.engine.Window;
 import org.joml.Vector2d;
 import org.lwjgl.glfw.GLFW;
 

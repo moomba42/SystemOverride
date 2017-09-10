@@ -1,6 +1,9 @@
-package com.moomba.systemoverride.engine;
+package com.moomba.systemoverride.engine.entities.components;
 
-public class MeshComponent extends Component{
+import com.moomba.systemoverride.engine.Mesh;
+import com.moomba.systemoverride.engine.entities.Component;
+
+public class MeshComponent extends Component {
     private Mesh mesh;
 
     public MeshComponent(Mesh mesh) {

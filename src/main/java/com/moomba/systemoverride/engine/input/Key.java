@@ -1,4 +1,4 @@
-package com.moomba.systemoverride.engine;
+package com.moomba.systemoverride.engine.input;
 
 import java.util.HashMap;
 import java.util.Map;

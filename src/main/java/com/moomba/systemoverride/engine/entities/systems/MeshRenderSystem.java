@@ -1,8 +1,17 @@
-package com.moomba.systemoverride.engine;
+package com.moomba.systemoverride.engine.entities.systems;
+
+import com.moomba.systemoverride.engine.AssetLoader;
+import com.moomba.systemoverride.engine.Family;
+import com.moomba.systemoverride.engine.Renderer;
+import com.moomba.systemoverride.engine.entities.Entity;
+import com.moomba.systemoverride.engine.entities.EntitySystem;
+import com.moomba.systemoverride.engine.entities.components.MeshComponent;
+import com.moomba.systemoverride.engine.entities.components.TransformComponent;
+import com.moomba.systemoverride.engine.input.InputManager;
 
 import java.util.List;
 
-public class MeshRenderSystem implements EntitySystem{
+public class MeshRenderSystem implements EntitySystem {
 
     private static final Family family = new Family().includes(MeshComponent.class, TransformComponent.class);;
 
