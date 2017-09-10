@@ -79,7 +79,10 @@ public class Renderer implements Window.ResizeListener{
 
         shader.use();
         shader.uploadMVPMatrix(model, view, projection);
-        entity.getComponent(MeshComponent.class).getMesh().render();
+        Model3D mesh = entity.getComponent(MeshComponent.class).getMesh();
+        mesh.bind();
+        mesh.render();
+        mesh.unbind();
     }
 
     public void dispose() {

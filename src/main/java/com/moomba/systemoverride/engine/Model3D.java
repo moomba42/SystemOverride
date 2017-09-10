@@ -36,12 +36,14 @@ public class Model3D {
         this.indices = indices;
     }
 
-    public void render(){
+    public void bind(){
         glBindVertexArray(vaoID);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
+    }
 
+    public void render(){
         //glDrawArrays(GL_TRIANGLES, 0, positions.length/3);
         glDrawElements(
                 GL_TRIANGLES,
@@ -49,7 +51,9 @@ public class Model3D {
                 GL_UNSIGNED_INT,
                 0
         );
+    }
 
+    public void unbind(){
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(3);
