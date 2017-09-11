@@ -4,6 +4,7 @@ import com.moomba.systemoverride.engine.*;
 import com.moomba.systemoverride.engine.entities.*;
 import com.moomba.systemoverride.engine.entities.components.CameraComponent;
 import com.moomba.systemoverride.engine.entities.components.MeshComponent;
+import com.moomba.systemoverride.engine.entities.components.OctreeComponent;
 import com.moomba.systemoverride.engine.entities.components.TransformComponent;
 import com.moomba.systemoverride.engine.entities.systems.CameraMovementSystem;
 
@@ -36,8 +37,16 @@ public class SOGame implements Scene{
         octree.subdivide();
         octree.subdivide();
         octree.subdivide();
-        octree.subdivide();
         Mesh mesh = dualContourer.contoure(octree);
+        MeshComponent meshComponent = new MeshComponent(mesh);
+        TransformComponent transformComponent = new TransformComponent();
+        transformComponent.getPosition().set(posX, posY, posZ);
+        OctreeComponent octreeComponent = new OctreeComponent(octree);
+        Entity entity = new Entity();
+        //entity.addComponent(meshComponent);
+        entity.addComponent(transformComponent);
+        entity.addComponent(octreeComponent);
+        engine.addEntity(entity);
     }
 
     private void addCube(float x, float y, float z, float size, float r, float g, float b) {

@@ -18,6 +18,15 @@ public class Octree {
         root.subdivide();
     }
 
+    public void processLeafs(NodeProcessor processor){
+        root.processLeafs(processor);
+    }
+
+    @FunctionalInterface
+    public interface NodeProcessor{
+        void process(Node node);
+    }
+
     public class Node{
         public float edgeSize;
         public int depth;
@@ -35,7 +44,7 @@ public class Octree {
 
         public void subdivide(){
             if(children == null){
-                float hEdgeSize = edgeSize/2;
+                float hEdgeSize = edgeSize/4;
                 children = new Node[8];
                 children[0] = new Node(depth+1, edgeSize/2, new Vector3f(center).add(-hEdgeSize, -hEdgeSize, -hEdgeSize));
                 children[1] = new Node(depth+1, edgeSize/2, new Vector3f(center).add(+hEdgeSize, -hEdgeSize, -hEdgeSize));
@@ -88,6 +97,13 @@ public class Octree {
 
         public Vector3f getNormal() {
             return normal;
+        }
+
+        public void processLeafs(NodeProcessor processor) {
+            if(children == null) processor.process(this);
+            else for (Node child : children) {
+                child.processLeafs(processor);
+            }
         }
     }
 }

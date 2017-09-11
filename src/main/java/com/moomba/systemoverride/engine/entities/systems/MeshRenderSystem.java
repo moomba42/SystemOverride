@@ -11,9 +11,13 @@ import com.moomba.systemoverride.engine.input.InputManager;
 
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.GL_FILL;
+import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL11.glPolygonMode;
+
 public class MeshRenderSystem implements EntitySystem {
 
-    private static final Family family = new Family().includes(MeshComponent.class, TransformComponent.class);;
+    private static final Family family = new Family().includes(MeshComponent.class, TransformComponent.class);
 
     @Override
     public void init(AssetLoader loader) {

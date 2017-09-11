@@ -1,5 +1,7 @@
 package com.moomba.systemoverride.engine;
 
+import org.joml.Vector3f;
+
 public class DualContourer {
 
     private Sampler sampler;

@@ -28,12 +28,18 @@ public class Mesh {
 
     private int vaoID;
 
+    private int drawMode = GL_TRIANGLES;
+
 
     public Mesh(float[] positions, float[] normals, float[] colors, int[] indices) {
         this.positions = positions;
         this.normals = normals;
         this.colors = colors;
         this.indices = indices;
+    }
+
+    public void setDrawMode(int drawMode){
+        this.drawMode = drawMode;
     }
 
     public void bind(){
@@ -44,9 +50,8 @@ public class Mesh {
     }
 
     public void render(){
-        //glDrawArrays(GL_TRIANGLES, 0, positions.length/3);
         glDrawElements(
-                GL_TRIANGLES,
+                drawMode,
                 indices.length,
                 GL_UNSIGNED_INT,
                 0

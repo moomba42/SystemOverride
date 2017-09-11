@@ -1,5 +1,7 @@
 package com.moomba.systemoverride.engine;
 
+import static org.lwjgl.opengl.GL11.*;
+
 public class MeshBuilder {
 
 
@@ -103,6 +105,7 @@ public class MeshBuilder {
         };
 
         Mesh mesh = new Mesh(positions, normals, colors, indices);
+        mesh.setDrawMode(GL_TRIANGLES);
         mesh.uploadToGPU();
 
         return mesh;
@@ -170,8 +173,62 @@ public class MeshBuilder {
         };
 
         Mesh mesh = new Mesh(positions, normals, colors, indices);
+        mesh.setDrawMode(GL_TRIANGLES);
         mesh.uploadToGPU();
 
+        return mesh;
+    }
+
+    public static Mesh linecube(int size, int r, int g, int b) {
+        float h = size/2f;
+        float[] positions = new float[]{
+           -h, -h, -h,
+            h, -h, -h,
+           -h, -h,  h,
+            h, -h,  h,
+           -h,  h, -h,
+            h,  h, -h,
+           -h,  h,  h,
+            h,  h,  h
+        };
+        float[] normals = new float[]{
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 0
+        };
+        float[] colors = new float[]{
+            r,  g,  b,
+            r,  g,  b,
+            r,  g,  b,
+            r,  g,  b,
+            r,  g,  b,
+            r,  g,  b,
+            r,  g,  b,
+            r,  g,  b
+        };
+        int[] indices = new int[]{
+            0, 1,
+            1, 3,
+            3, 2,
+            2, 0,
+            4, 5,
+            5, 7,
+            7, 6,
+            6, 4,
+            2, 6,
+            3, 7,
+            1, 5,
+            0, 4
+        };
+
+        Mesh mesh = new Mesh(positions, normals, colors, indices);
+        mesh.setDrawMode(GL_LINES);
+        mesh.uploadToGPU();
         return mesh;
     }
 }

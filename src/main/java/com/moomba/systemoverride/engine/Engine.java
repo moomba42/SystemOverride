@@ -3,6 +3,7 @@ package com.moomba.systemoverride.engine;
 import com.moomba.systemoverride.engine.entities.*;
 import com.moomba.systemoverride.engine.entities.systems.CameraSystem;
 import com.moomba.systemoverride.engine.entities.systems.MeshRenderSystem;
+import com.moomba.systemoverride.engine.entities.systems.OctreeDebugRenderSystem;
 import com.moomba.systemoverride.engine.input.InputManager;
 
 import java.util.ArrayList;
@@ -29,6 +30,8 @@ public class Engine{
     private int fps = 60;
 
     private List<EntitySystem> systems;
+    private Map<EntitySystem, Boolean> systemsState;
+    private Map<Class<? extends EntitySystem>, EntitySystem> systemsByClass;
     private List<Entity> entities;
     private Map<Family, List<Entity>> familyMap;
 
@@ -41,6 +44,8 @@ public class Engine{
 
     public Engine(){
         systems = new ArrayList<>();
+        systemsState = new HashMap<>();
+        systemsByClass = new HashMap<>();
         entities = new ArrayList<>();
         familyMap = new HashMap<>();
 
@@ -70,6 +75,7 @@ public class Engine{
 
     private void createBuiltInSystems() {
         addSystem(new MeshRenderSystem());
+        addSystem(new OctreeDebugRenderSystem());
         addSystem(new CameraSystem());
     }
 
@@ -143,10 +149,21 @@ public class Engine{
         }
 
         systems.forEach(system -> {
-            system.update(familyMap.get(system.getFamily()), inputManager);
+            if(isSystemRunning(system.getClass()))
+                system.update(familyMap.get(system.getFamily()), inputManager);
         });
 
         //update stuff here
+    }
+
+    public boolean isSystemRunning(Class<? extends EntitySystem> claz) {
+        if(!systemsByClass.containsKey(claz)) return false;
+        return systemsState.get(systemsByClass.get(claz));
+    }
+
+    public void setSystemState(Class<? extends EntitySystem> claz, boolean running){
+        if(!systemsByClass.containsKey(claz)) return;
+        systemsState.put(systemsByClass.get(claz), running);
     }
 
     private void render() {
@@ -155,7 +172,8 @@ public class Engine{
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         systems.forEach(system -> {
-            system.render(familyMap.get(system.getFamily()), renderer);
+            if(isSystemRunning(system.getClass()))
+                system.render(familyMap.get(system.getFamily()), renderer);
         });
         renderer.render();
 
@@ -172,6 +190,10 @@ public class Engine{
         //add the system
         systems.add(system);
 
+        systemsState.put(system, true);
+
+        systemsByClass.put(system.getClass(), system);
+
         //if this system's family is unique, group all entities that qualify for this family
         if(!familyMap.containsKey(system.getFamily()))
             groupEntitiesForFamily(system.getFamily());
@@ -182,6 +204,10 @@ public class Engine{
 
         //remove the system
         systems.remove(system);
+
+        systemsState.remove(system);
+
+        systemsByClass.remove(system.getClass());
     }
 
     private void groupEntitiesForFamily(Family family) {
@@ -228,6 +254,8 @@ public class Engine{
 
         entityListeners.clear();
         systems.clear();
+        systemsState.clear();
+        systemsByClass.clear();
         familyMap.clear();
         entities.clear();
 

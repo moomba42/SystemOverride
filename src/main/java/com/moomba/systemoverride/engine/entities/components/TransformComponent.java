@@ -11,6 +11,10 @@ public class TransformComponent extends Component {
     private Vector3f scale;
 
     public TransformComponent(){
+        reset();
+    }
+
+    public void reset() {
         position = new Vector3f(0, 0, 0);
         rotation = new Quaternionf();
         scale = new Vector3f(1);

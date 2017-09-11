@@ -13,6 +13,6 @@ uniform mat4 projection_matrix;
 
 void main(){
     pass_color = color;
-    pass_normal = (model_matrix * vec4(normal, 1.0)).xyz;
+    pass_normal = normal;
     gl_Position = projection_matrix * view_matrix * model_matrix * vec4(position, 1.0);
 }
