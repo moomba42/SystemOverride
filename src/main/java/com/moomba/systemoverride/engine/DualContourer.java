@@ -64,8 +64,8 @@ public class DualContourer {
         Integer nd0i = getIndice(nd0);
         Integer nd1i = getIndice(nd1);
         Integer nd2i = getIndice(nd2);
-        indices.add(nd0i);
         indices.add(nd1i);
+        indices.add(nd0i);
         indices.add(nd2i);
     }
 
@@ -150,8 +150,8 @@ public class DualContourer {
                 edgeProc(childOrParent(nd0, 3), childOrParent(nd1, 7), childOrParent(nd2, 1), childOrParent(nd3, 5), Axis.X);
                 edgeProc(childOrParent(nd0, 2), childOrParent(nd1, 6), childOrParent(nd2, 0), childOrParent(nd3, 4), Axis.X);
             }else if(axis.equals(Axis.Y)){
-                edgeProc(childOrParent(nd0, 1), childOrParent(nd1, 5), childOrParent(nd2, 0), childOrParent(nd3, 4), Axis.X);
-                edgeProc(childOrParent(nd0, 3), childOrParent(nd1, 7), childOrParent(nd2, 2), childOrParent(nd3, 6), Axis.X);
+                edgeProc(childOrParent(nd0, 1), childOrParent(nd1, 5), childOrParent(nd2, 0), childOrParent(nd3, 4), Axis.Y);
+                edgeProc(childOrParent(nd0, 3), childOrParent(nd1, 7), childOrParent(nd2, 2), childOrParent(nd3, 6), Axis.Y);
             }else if(axis.equals(Axis.Z)){
                 edgeProc(childOrParent(nd0, 7), childOrParent(nd1, 6), childOrParent(nd2, 5), childOrParent(nd3, 4), Axis.Z);
                 edgeProc(childOrParent(nd0, 3), childOrParent(nd1, 2), childOrParent(nd2, 1), childOrParent(nd3, 0), Axis.Z);

@@ -38,7 +38,6 @@ public class SOGame implements Scene{
     }
 
     private void addTerrain(float posX, float posY, float posZ, float size, int seed) {
-        SimplexNoiseGenerator generator = new SimplexNoiseGenerator(seed);
         DualContourer dualContourer = new DualContourer();
         Octree octree = new Octree(size);
         octree.subdivide();
