@@ -53,7 +53,7 @@ public class Engine{
     }
 
     private void init(Scene scene){
-        window = new Window(1000, 600, "System Override", false, false, true);
+        window = new Window(1080, 720, "System Override", false, false, true);
         window.init();
         window.lockMouse();
 
