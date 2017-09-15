@@ -123,19 +123,19 @@ public class DualContourer {
                 edgeProc(childOrParent(nd0, 7), childOrParent(nd1, 3), childOrParent(nd0, 6), childOrParent(nd1, 2), Axis.Y);
                 edgeProc(childOrParent(nd0, 5), childOrParent(nd1, 1), childOrParent(nd0, 4), childOrParent(nd1, 0), Axis.Y);
             } else if (axis.equals(Axis.Y)) {
-                faceProc(childOrParent(nd0, 6), childOrParent(nd1, 4), Axis.X);
-                faceProc(childOrParent(nd0, 2), childOrParent(nd1, 0), Axis.X);
-                faceProc(childOrParent(nd0, 3), childOrParent(nd1, 1), Axis.X);
-                faceProc(childOrParent(nd0, 7), childOrParent(nd1, 5), Axis.X);
+                faceProc(childOrParent(nd0, 6), childOrParent(nd1, 4), Axis.Y);
+                faceProc(childOrParent(nd0, 2), childOrParent(nd1, 0), Axis.Y);
+                faceProc(childOrParent(nd0, 3), childOrParent(nd1, 1), Axis.Y);
+                faceProc(childOrParent(nd0, 7), childOrParent(nd1, 5), Axis.Y);
                 edgeProc(childOrParent(nd0, 6), childOrParent(nd1, 2), childOrParent(nd0, 4), childOrParent(nd1, 0), Axis.X);
                 edgeProc(childOrParent(nd0, 7), childOrParent(nd1, 3), childOrParent(nd0, 5), childOrParent(nd1, 1), Axis.X);
                 edgeProc(childOrParent(nd0, 6), childOrParent(nd1, 7), childOrParent(nd0, 4), childOrParent(nd1, 5), Axis.Z);
                 edgeProc(childOrParent(nd0, 2), childOrParent(nd1, 3), childOrParent(nd0, 0), childOrParent(nd1, 1), Axis.Z);
             } else if (axis.equals(Axis.Z)) {
-                faceProc(childOrParent(nd0, 0), childOrParent(nd1, 4), Axis.X);
-                faceProc(childOrParent(nd0, 1), childOrParent(nd1, 5), Axis.X);
-                faceProc(childOrParent(nd0, 2), childOrParent(nd1, 6), Axis.X);
-                faceProc(childOrParent(nd0, 3), childOrParent(nd1, 7), Axis.X);
+                faceProc(childOrParent(nd0, 0), childOrParent(nd1, 4), Axis.Z);
+                faceProc(childOrParent(nd0, 1), childOrParent(nd1, 5), Axis.Z);
+                faceProc(childOrParent(nd0, 2), childOrParent(nd1, 6), Axis.Z);
+                faceProc(childOrParent(nd0, 3), childOrParent(nd1, 7), Axis.Z);
                 edgeProc(childOrParent(nd0, 2), childOrParent(nd1, 6), childOrParent(nd0, 3), childOrParent(nd1, 7), Axis.Y);
                 edgeProc(childOrParent(nd0, 0), childOrParent(nd1, 4), childOrParent(nd0, 1), childOrParent(nd1, 5), Axis.Y);
                 edgeProc(childOrParent(nd0, 0), childOrParent(nd1, 4), childOrParent(nd0, 2), childOrParent(nd1, 6), Axis.X);
