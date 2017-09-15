@@ -55,8 +55,8 @@ public class DualContourer {
     }
 
     private void createQuad(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2, Octree.Node nd3){
-        createTriangle(nd0, nd3, nd2);
         createTriangle(nd0, nd1, nd3);
+        createTriangle(nd0, nd3, nd2);
     }
 
     private void createTriangle(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2){
@@ -64,8 +64,8 @@ public class DualContourer {
         Integer nd0i = getIndice(nd0);
         Integer nd1i = getIndice(nd1);
         Integer nd2i = getIndice(nd2);
-        indices.add(nd1i);
         indices.add(nd0i);
+        indices.add(nd1i);
         indices.add(nd2i);
     }
 
@@ -157,6 +157,22 @@ public class DualContourer {
                 edgeProc(childOrParent(nd0, 3), childOrParent(nd1, 2), childOrParent(nd2, 1), childOrParent(nd3, 0), Axis.Z);
             }
         }else{
+            double a = 0;
+            double b = 0;
+            if(axis.equals(Axis.X)){
+                a = nd0.getSign(2);
+                b = nd0.getSign(3);
+            }
+            if(axis.equals(Axis.Y)){
+                a = nd0.getSign(3);
+                b = nd0.getSign(1);
+            }
+            if(axis.equals(Axis.Z)){
+                a = nd0.getSign(7);
+                b = nd0.getSign(3);
+            }
+
+            if((a >= 0 && b < 0) || (b >= 0 && a < 0))
             classifyMinimalEdge(nd0, nd1, nd2, nd3);
         }
     }

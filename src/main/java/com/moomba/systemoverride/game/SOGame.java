@@ -42,8 +42,6 @@ public class SOGame implements Scene{
         Octree octree = new Octree(size);
         octree.subdivide();
         octree.subdivide();
-        octree.subdivide();
-        octree.subdivide();
         populateOctree(octree);
         Mesh mesh = dualContourer.contoure(octree);
         //mesh.setDrawMode(GL_LINES);
@@ -60,7 +58,7 @@ public class SOGame implements Scene{
 
     private void populateOctree(Octree octree) {
         //Noise noise = new PerlinNoise(321);
-        Noise noise = new CircleNoise(0, 0, 0, 3.15f);
+        Noise noise = new CircleNoise(0, 0, 0, 3.2f);
         octree.processLeafs(node ->{
             node.setSign(0, noise.noisef(
                     node.getCenter().x - node.getEdgeSize()/2,
