@@ -15,24 +15,9 @@ public class DualContourer {
     private Map<Octree.Node, Integer> indexMap;
     private List<Integer> indices;
 
-    private Octree.Node nd6, nd7;
-    private Octree.Node nd67, nd76;
-    private Octree.Node nd673, nd675, nd671, nd762, nd764, nd760;
-
     public Mesh contoure(Octree octree){
         indexMap = new HashMap<>();
         indices = new ArrayList<>();
-
-        nd6 = octree.getRoot().getChild(6);
-        nd7 = octree.getRoot().getChild(7);
-        nd67 = octree.getRoot().getChild(6).getChild(7);
-        nd76 = octree.getRoot().getChild(7).getChild(6);
-        nd673 = octree.getRoot().getChild(6).getChild(7).getChild(3);
-        nd675 = octree.getRoot().getChild(6).getChild(7).getChild(5);
-        nd671 = octree.getRoot().getChild(6).getChild(7).getChild(1);
-        nd762 = octree.getRoot().getChild(7).getChild(6).getChild(2);
-        nd764 = octree.getRoot().getChild(7).getChild(6).getChild(4);
-        nd760 = octree.getRoot().getChild(7).getChild(6).getChild(0);
 
         // TODO: 1. Collapse homogenous leaves.
         // TODO: 2. Construct a QEF for each heterogenous leaf and simplify the octree using these QEFs.
@@ -129,9 +114,6 @@ public class DualContourer {
 
 
     private void faceProc(Octree.Node nd0, Octree.Node nd1, Axis axis){
-        if(nd0 == nd6 && nd1 == nd7){
-            System.out.println("face(6,7)");
-        }
         if(nd0.hasChildren() || nd1.hasChildren()) {
             if (axis.equals(Axis.X)) {
                 faceProc(childOrParent(nd0, 5), childOrParent(nd1, 4), Axis.X);
@@ -165,9 +147,6 @@ public class DualContourer {
     }
 
     private void edgeProc(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2, Octree.Node nd3, Axis axis){
-        if(nd0 == nd671 && nd1 == nd760 && nd2 == nd673 && nd3 == nd762){
-            System.out.println("FAULTY!!");
-        }
         if(nd0.hasChildren() || nd1.hasChildren() || nd2.hasChildren() || nd3.hasChildren()){
             if(axis.equals(Axis.X)){
                 edgeProc(childOrParent(nd0, 3), childOrParent(nd1, 7), childOrParent(nd2, 1), childOrParent(nd3, 5), Axis.X);
