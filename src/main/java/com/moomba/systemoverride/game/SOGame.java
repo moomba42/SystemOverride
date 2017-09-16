@@ -18,6 +18,8 @@ import static org.lwjgl.opengl.GL11.GL_LINES;
 public class SOGame implements Scene{
 
     private Engine engine;
+    private Noise noise = new CircleNoise(0, 0, 0, 5);
+    //private Noise noise = new PerlinNoise(321);
 
     public static void main(String[] args){
         System.out.println("Starting System Override");
@@ -42,6 +44,7 @@ public class SOGame implements Scene{
         Octree octree = new Octree(size);
         octree.subdivide();
         octree.subdivide();
+        octree.subdivide();
         populateOctree(octree);
         Mesh mesh = dualContourer.contoure(octree);
         //mesh.setDrawMode(GL_LINES);
@@ -56,39 +59,49 @@ public class SOGame implements Scene{
         engine.addEntity(entity);
     }
 
+    float noiseScale = 1f;
+
+    private float getNoise(float x, float y, float z){
+        return noise.noisef(x/noiseScale, y/noiseScale, z/noiseScale);
+    }
+
+    private Vector3d getGradient(double x, double y, double z){
+        return noise.gradient(x/noiseScale, y/noiseScale, z/noiseScale);
+    }
+
     private void populateOctree(Octree octree) {
         //Noise noise = new PerlinNoise(321);
-        Noise noise = new CircleNoise(0, 0, 0, 3.2f);
+        //Noise noise = new CircleNoise(0, 0, 0, 4f);
         octree.processLeafs(node ->{
-            node.setSign(0, noise.noisef(
+            node.setSign(0, getNoise(
                     node.getCenter().x - node.getEdgeSize()/2,
                     node.getCenter().y - node.getEdgeSize()/2,
                     node.getCenter().z - node.getEdgeSize()/2));
-            node.setSign(1, noise.noisef(
+            node.setSign(1, getNoise(
                     node.getCenter().x + node.getEdgeSize()/2,
                     node.getCenter().y - node.getEdgeSize()/2,
                     node.getCenter().z - node.getEdgeSize()/2));
-            node.setSign(2, noise.noisef(
+            node.setSign(2, getNoise(
                     node.getCenter().x - node.getEdgeSize()/2,
                     node.getCenter().y + node.getEdgeSize()/2,
                     node.getCenter().z - node.getEdgeSize()/2));
-            node.setSign(3, noise.noisef(
+            node.setSign(3, getNoise(
                     node.getCenter().x + node.getEdgeSize()/2,
                     node.getCenter().y + node.getEdgeSize()/2,
                     node.getCenter().z - node.getEdgeSize()/2));
-            node.setSign(4, noise.noisef(
+            node.setSign(4, getNoise(
                     node.getCenter().x - node.getEdgeSize()/2,
                     node.getCenter().y - node.getEdgeSize()/2,
                     node.getCenter().z + node.getEdgeSize()/2));
-            node.setSign(5, noise.noisef(
+            node.setSign(5, getNoise(
                     node.getCenter().x + node.getEdgeSize()/2,
                     node.getCenter().y - node.getEdgeSize()/2,
                     node.getCenter().z + node.getEdgeSize()/2));
-            node.setSign(6, noise.noisef(
+            node.setSign(6, getNoise(
                     node.getCenter().x - node.getEdgeSize()/2,
                     node.getCenter().y + node.getEdgeSize()/2,
                     node.getCenter().z + node.getEdgeSize()/2));
-            node.setSign(7, noise.noisef(
+            node.setSign(7, getNoise(
                     node.getCenter().x + node.getEdgeSize()/2,
                     node.getCenter().y + node.getEdgeSize()/2,
                     node.getCenter().z + node.getEdgeSize()/2));
@@ -114,7 +127,7 @@ public class SOGame implements Scene{
             }
             List<Planed> planes = new ArrayList<>();
             edgeIntersectionsList.forEach(intersectionPoint -> {
-                Vector3d normal = noise.gradient(intersectionPoint.x, intersectionPoint.y, intersectionPoint.z);
+                Vector3d normal = getGradient(intersectionPoint.x, intersectionPoint.y, intersectionPoint.z);
                 planes.add(new Planed(intersectionPoint, normal));
             });
             Vector3f minimizedQEFPosition = minimizeQEF(node, planes);

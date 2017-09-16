@@ -15,9 +15,24 @@ public class DualContourer {
     private Map<Octree.Node, Integer> indexMap;
     private List<Integer> indices;
 
+    private Octree.Node nd6, nd7;
+    private Octree.Node nd67, nd76;
+    private Octree.Node nd673, nd675, nd671, nd762, nd764, nd760;
+
     public Mesh contoure(Octree octree){
         indexMap = new HashMap<>();
         indices = new ArrayList<>();
+
+        nd6 = octree.getRoot().getChild(6);
+        nd7 = octree.getRoot().getChild(7);
+        nd67 = octree.getRoot().getChild(6).getChild(7);
+        nd76 = octree.getRoot().getChild(7).getChild(6);
+        nd673 = octree.getRoot().getChild(6).getChild(7).getChild(3);
+        nd675 = octree.getRoot().getChild(6).getChild(7).getChild(5);
+        nd671 = octree.getRoot().getChild(6).getChild(7).getChild(1);
+        nd762 = octree.getRoot().getChild(7).getChild(6).getChild(2);
+        nd764 = octree.getRoot().getChild(7).getChild(6).getChild(4);
+        nd760 = octree.getRoot().getChild(7).getChild(6).getChild(0);
 
         // TODO: 1. Collapse homogenous leaves.
         // TODO: 2. Construct a QEF for each heterogenous leaf and simplify the octree using these QEFs.
@@ -80,6 +95,7 @@ public class DualContourer {
         }
     }
 
+    //100% verified
     private void cellProc(Octree.Node nd0){
         if(nd0.hasChildren()){
             cellProc(nd0.getChild(0));
@@ -111,26 +127,30 @@ public class DualContourer {
         }
     }
 
+
     private void faceProc(Octree.Node nd0, Octree.Node nd1, Axis axis){
+        if(nd0 == nd6 && nd1 == nd7){
+            System.out.println("face(6,7)");
+        }
         if(nd0.hasChildren() || nd1.hasChildren()) {
             if (axis.equals(Axis.X)) {
                 faceProc(childOrParent(nd0, 5), childOrParent(nd1, 4), Axis.X);
-                faceProc(childOrParent(nd0, 6), childOrParent(nd1, 7), Axis.X);
-                faceProc(childOrParent(nd0, 2), childOrParent(nd1, 3), Axis.X);
-                faceProc(childOrParent(nd0, 0), childOrParent(nd1, 1), Axis.X);
+                faceProc(childOrParent(nd0, 7), childOrParent(nd1, 6), Axis.X);
+                faceProc(childOrParent(nd0, 3), childOrParent(nd1, 2), Axis.X);
+                faceProc(childOrParent(nd0, 1), childOrParent(nd1, 0), Axis.X);
                 edgeProc(childOrParent(nd0, 5), childOrParent(nd1, 4), childOrParent(nd0, 7), childOrParent(nd1, 6), Axis.Z);
                 edgeProc(childOrParent(nd0, 1), childOrParent(nd1, 0), childOrParent(nd0, 3), childOrParent(nd1, 2), Axis.Z);
-                edgeProc(childOrParent(nd0, 7), childOrParent(nd1, 3), childOrParent(nd0, 6), childOrParent(nd1, 2), Axis.Y);
-                edgeProc(childOrParent(nd0, 5), childOrParent(nd1, 1), childOrParent(nd0, 4), childOrParent(nd1, 0), Axis.Y);
+                edgeProc(childOrParent(nd0, 7), childOrParent(nd0, 3), childOrParent(nd1, 6), childOrParent(nd1, 2), Axis.Y);
+                edgeProc(childOrParent(nd0, 5), childOrParent(nd0, 1), childOrParent(nd1, 4), childOrParent(nd1, 0), Axis.Y);
             } else if (axis.equals(Axis.Y)) {
                 faceProc(childOrParent(nd0, 6), childOrParent(nd1, 4), Axis.Y);
                 faceProc(childOrParent(nd0, 2), childOrParent(nd1, 0), Axis.Y);
                 faceProc(childOrParent(nd0, 3), childOrParent(nd1, 1), Axis.Y);
                 faceProc(childOrParent(nd0, 7), childOrParent(nd1, 5), Axis.Y);
-                edgeProc(childOrParent(nd0, 6), childOrParent(nd1, 2), childOrParent(nd0, 4), childOrParent(nd1, 0), Axis.X);
-                edgeProc(childOrParent(nd0, 7), childOrParent(nd1, 3), childOrParent(nd0, 5), childOrParent(nd1, 1), Axis.X);
-                edgeProc(childOrParent(nd0, 6), childOrParent(nd1, 7), childOrParent(nd0, 4), childOrParent(nd1, 5), Axis.Z);
-                edgeProc(childOrParent(nd0, 2), childOrParent(nd1, 3), childOrParent(nd0, 0), childOrParent(nd1, 1), Axis.Z);
+                edgeProc(childOrParent(nd0, 6), childOrParent(nd0, 2), childOrParent(nd1, 4), childOrParent(nd1, 0), Axis.X);
+                edgeProc(childOrParent(nd0, 7), childOrParent(nd0, 3), childOrParent(nd1, 5), childOrParent(nd1, 1), Axis.X);
+                edgeProc(childOrParent(nd0, 6), childOrParent(nd0, 7), childOrParent(nd1, 4), childOrParent(nd1, 5), Axis.Z);
+                edgeProc(childOrParent(nd0, 2), childOrParent(nd0, 3), childOrParent(nd1, 0), childOrParent(nd1, 1), Axis.Z);
             } else if (axis.equals(Axis.Z)) {
                 faceProc(childOrParent(nd0, 0), childOrParent(nd1, 4), Axis.Z);
                 faceProc(childOrParent(nd0, 1), childOrParent(nd1, 5), Axis.Z);
@@ -145,6 +165,9 @@ public class DualContourer {
     }
 
     private void edgeProc(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2, Octree.Node nd3, Axis axis){
+        if(nd0 == nd671 && nd1 == nd760 && nd2 == nd673 && nd3 == nd762){
+            System.out.println("FAULTY!!");
+        }
         if(nd0.hasChildren() || nd1.hasChildren() || nd2.hasChildren() || nd3.hasChildren()){
             if(axis.equals(Axis.X)){
                 edgeProc(childOrParent(nd0, 3), childOrParent(nd1, 7), childOrParent(nd2, 1), childOrParent(nd3, 5), Axis.X);
@@ -164,8 +187,8 @@ public class DualContourer {
                 b = nd0.getSign(3);
             }
             if(axis.equals(Axis.Y)){
-                a = nd0.getSign(3);
-                b = nd0.getSign(1);
+                a = nd1.getSign(7);
+                b = nd1.getSign(5);
             }
             if(axis.equals(Axis.Z)){
                 a = nd0.getSign(7);
