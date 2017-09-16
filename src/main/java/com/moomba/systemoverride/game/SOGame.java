@@ -172,12 +172,12 @@ public class SOGame implements Scene{
         double smallestQEF = 999999;
         Vector3f smallestQEFCenter = new Vector3f();
         for(float ix = 0; ix < divisions; ix++){
-            for(float iy = 0; iy < divisions; iy++) {
+            for(float iy = 0; iy <= divisions; iy++) {
                 for (float iz = 0; iz < divisions; iz++) {
                     Vector3f cellCenter = new Vector3f(
-                            node.getCenter().x-(node.getEdgeSize()/2)+(ix*stepSize)+(stepSize/2),
-                            node.getCenter().y-(node.getEdgeSize()/2)+(iy*stepSize)+(stepSize/2),
-                            node.getCenter().z-(node.getEdgeSize()/2)+(iz*stepSize)+(stepSize/2)
+                            node.getCenter().x-(node.getEdgeSize()/2)+(ix*stepSize),
+                            node.getCenter().y-(node.getEdgeSize()/2)+(iy*stepSize),
+                            node.getCenter().z-(node.getEdgeSize()/2)+(iz*stepSize)
                     );
                     double QEF = getQEF(cellCenter, planes);
                     if(QEF < smallestQEF){

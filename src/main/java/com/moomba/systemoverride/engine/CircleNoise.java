@@ -6,6 +6,9 @@ import org.joml.Vector3f;
 
 public class CircleNoise implements Noise {
 
+    private double sx = 1;
+    private double sy = 1;
+    private double sz = 1;
     private double px;
     private double py;
     private double pz;
@@ -20,7 +23,7 @@ public class CircleNoise implements Noise {
 
     @Override
     public double noise(double x, double y, double z) {
-        return ((x-px)*(x-px))+((y-py)*(y-py))+((z-pz)*(z-pz))-(radius*radius);
+        return (((x*sx)-px)*((x*sx)-px))+(((y*sy)-py)*((y*sy)-py))+(((z*sz)-pz)*((z*sz)-pz))-(radius*radius);
     }
 
     @Override
@@ -30,7 +33,7 @@ public class CircleNoise implements Noise {
 
     @Override
     public Vector3d gradient(double x, double y, double z) {
-        return new Vector3d(x-px, y-py, z-pz).normalize();
+        return new Vector3d((x*sx)-px, (y*sy)-py, (z*sz)-pz).normalize();
     }
 
     @Override
