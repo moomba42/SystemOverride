@@ -29,6 +29,8 @@ public class Mesh {
     private int vaoID;
 
     private int drawMode = GL_TRIANGLES;
+    private int polygonModeFace = GL_FRONT_AND_BACK;
+    private int polygonMode = GL_FILL;
 
 
     public Mesh(float[] positions, float[] normals, float[] colors, int[] indices) {
@@ -50,6 +52,7 @@ public class Mesh {
     }
 
     public void render(){
+        glPolygonMode(polygonModeFace, polygonMode);
         glDrawElements(
                 drawMode,
                 indices.length,
@@ -63,6 +66,11 @@ public class Mesh {
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(3);
         glBindVertexArray(0);
+    }
+
+    public void setPolygonMode(int face, int mode){
+        polygonModeFace = face;
+        polygonMode = mode;
     }
 
     public void uploadToGPU(){
