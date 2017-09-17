@@ -4,19 +4,24 @@ import com.moomba.systemoverride.engine.*;
 import com.moomba.systemoverride.engine.entities.*;
 import com.moomba.systemoverride.engine.entities.components.CameraComponent;
 import com.moomba.systemoverride.engine.entities.components.MeshComponent;
+import com.moomba.systemoverride.engine.entities.components.OctreeComponent;
 import com.moomba.systemoverride.engine.entities.components.TransformComponent;
 import com.moomba.systemoverride.engine.entities.systems.CameraMovementSystem;
+import com.moomba.systemoverride.engine.generation.FunctionToFloat;
+import com.moomba.systemoverride.engine.generation.SimplexNoiseFunction;
 import org.joml.*;
 import org.joml.Math;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL11.GL_LINE;
+
 public class SOGame implements Scene{
 
     private Engine engine;
-    //private Noise noise = new CircleNoise(0, 0, 0, 3.5f);
-    private Noise noise = new PerlinNoise(321);
+    private FunctionToFloat function = new FunctionToFloat(new SimplexNoiseFunction(698423));
 
     public static void main(String[] args){
         System.out.println("Starting System Override");
@@ -53,12 +58,14 @@ public class SOGame implements Scene{
         engine.addEntity(entity);
     }
 
+    private float scale = 0.08f;
+
     private float getNoise(float x, float y, float z){
-        return noise.noisef(x, y, z);
+        return function.noise(x*scale, y*scale, z*scale);
     }
 
     private Vector3d getGradient(double x, double y, double z){
-        return noise.gradient(x, y, z);
+        return function.getSourceFunction().normal(x*scale, y*scale, z*scale);
     }
 
     private void populateOctree(Octree octree) {
