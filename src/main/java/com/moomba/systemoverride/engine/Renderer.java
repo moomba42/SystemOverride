@@ -49,9 +49,21 @@ public class Renderer{
     }
 
     public void render(){
-        glEnable(GL_DEPTH_TEST);
+        //Backface culling
         //glEnable(GL_CULL_FACE);
         //glCullFace(GL_BACK);
+
+        //Depth testing
+        glEnable(GL_DEPTH_TEST);
+
+        //Anti-aliasing for lines
+        glEnable(GL_LINE_SMOOTH);
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+        glLineWidth(3);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        //Rendering
         shader.use();
         meshesToRender.forEach((mesh, transforms)->{
             mesh.bind();
