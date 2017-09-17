@@ -6,8 +6,8 @@ public class Octree {
 
     private Node root;
 
-    public Octree(float size){
-        root = new Node(0, size, new Vector3f(0, 0, 0));
+    public Octree(float edgeSize){
+        root = new Node(0, edgeSize, new Vector3f(0, 0, 0));
     }
 
     public Node getRoot() {
