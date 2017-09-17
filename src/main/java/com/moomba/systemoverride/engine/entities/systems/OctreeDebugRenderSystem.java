@@ -25,7 +25,7 @@ public class OctreeDebugRenderSystem implements EntitySystem {
     @Override
     public void init(AssetLoader loader) {
         quadCube = MeshBuilder.linecube(1, 1, 1, 1);
-        vertexCube = MeshBuilder.cube(0.1f, 0, 0, 1);
+        vertexCube = MeshBuilder.cube(0.05f, 0, 0, 1);
         transformComponent = new TransformComponent();
     }
 
@@ -42,15 +42,16 @@ public class OctreeDebugRenderSystem implements EntitySystem {
     @Override
     public void render(List<Entity> entities, Renderer renderer) {
         entities.forEach(entity -> {
+            TransformComponent entityTransformComponent = entity.getComponent(TransformComponent.class);
             Octree octree = entity.getComponent(OctreeComponent.class).getOctree();
             octree.processLeafs(node ->{
                 if(!node.isTagged()) return;
                 transformComponent.reset();
-                transformComponent.getPosition().set(node.center);
+                transformComponent.getPosition().set(node.center).add(entityTransformComponent.getPosition());
                 transformComponent.getScale().set(node.edgeSize);
                 renderer.queueMesh(quadCube, transformComponent.asTransformMatrix());
                 transformComponent.reset();
-                transformComponent.getPosition().set(node.vertex);
+                transformComponent.getPosition().set(node.vertex).add(entityTransformComponent.getPosition());
                 transformComponent.getScale().set(1);
                 renderer.queueMesh(vertexCube, transformComponent.asTransformMatrix());
             });

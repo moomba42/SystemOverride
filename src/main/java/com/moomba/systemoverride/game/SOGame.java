@@ -7,18 +7,25 @@ import com.moomba.systemoverride.engine.entities.components.MeshComponent;
 import com.moomba.systemoverride.engine.entities.components.OctreeComponent;
 import com.moomba.systemoverride.engine.entities.components.TransformComponent;
 import com.moomba.systemoverride.engine.entities.systems.CameraMovementSystem;
+import com.moomba.systemoverride.engine.entities.systems.OctreeDebugRenderSystem;
 import com.moomba.systemoverride.engine.generation.FunctionToFloat;
 import com.moomba.systemoverride.engine.generation.SimplexNoiseFunction;
+import com.moomba.systemoverride.engine.input.Key;
 import org.joml.*;
 import org.joml.Math;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.GL_FILL;
+import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL11.GL_LINE;
+
 public class SOGame implements Scene{
 
     private Engine engine;
     private FunctionToFloat function = new FunctionToFloat(new SimplexNoiseFunction(698423));
+    private Mesh mesh;
 
     public static void main(String[] args){
         System.out.println("Starting System Override");
@@ -30,39 +37,71 @@ public class SOGame implements Scene{
     public void init(Engine engine, AssetLoader loader) {
         this.engine = engine;
 
-        addCamera(0, 2, 20);
-        addTerrain(0, 0, 0, 3, 20, 16884);
+        addCamera(0, 2, 0);
+        addTerrain(0, 0, 0, 6, 10, 5, 16884);
 
         engine.addSystem(new CameraMovementSystem());
+        engine.setSystemState(OctreeDebugRenderSystem.class, false);
+
+        engine.addUpdateable(new Runnable(){
+            boolean wireframe = false;
+            boolean registered = false;
+            boolean octree = false;
+            boolean registeredOctree = false;
+
+            @Override
+            public void run() {
+                if(engine.getInputManager().isKeyPressed(Key.KEY_SPACE)){
+                    if(!registered) {
+                        if (wireframe) mesh.setPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                        else mesh.setPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                        wireframe = !wireframe;
+                        registered = true;
+                    }
+                }else{
+                    registered = false;
+                }
+                if(engine.getInputManager().isKeyPressed(Key.KEY_LETTER_T)){
+                    if(!registeredOctree) {
+                        if (octree) engine.setSystemState(OctreeDebugRenderSystem.class, false);
+                        else engine.setSystemState(OctreeDebugRenderSystem.class, true);
+                        octree = !octree;
+                        registeredOctree = true;
+                    }
+                }else{
+                    registeredOctree = false;
+                }
+            }
+        });
     }
 
-    private void addTerrain(float posX, float posY, float posZ, int detail, float size, int seed) {
+    private float functionScale = 1;
+    private void addTerrain(float posX, float posY, float posZ, int detail, float size, float functionScale, int seed) {
+        this.functionScale = functionScale;
         DualContourer dualContourer = new DualContourer();
         Octree octree = new Octree(size);
         for (int i = 0; i < detail; i++)
             octree.subdivide();
         populateOctree(octree);
-        Mesh mesh = dualContourer.contoure(octree);
+        mesh = dualContourer.contoure(octree);
         Entity entity = new Entity();
         MeshComponent meshComponent = new MeshComponent(mesh);
         entity.addComponent(meshComponent);
         TransformComponent transformComponent = new TransformComponent();
         transformComponent.getPosition().set(posX, posY, posZ);
+        transformComponent.getScale().set(1);
         entity.addComponent(transformComponent);
         OctreeComponent octreeComponent = new OctreeComponent(octree);
         entity.addComponent(octreeComponent);
-        //mesh.setPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         engine.addEntity(entity);
     }
 
-    private float scale = 0.08f;
-
     private float getNoise(float x, float y, float z){
-        return function.noise(x*scale, y*scale, z*scale);
+        return function.noise(x/functionScale, y/functionScale, z/functionScale);
     }
 
     private Vector3d getGradient(double x, double y, double z){
-        return function.getSourceFunction().normal(x*scale, y*scale, z*scale);
+        return function.getSourceFunction().normal(x/functionScale, y/functionScale, z/functionScale);
     }
 
     private void populateOctree(Octree octree) {
@@ -162,13 +201,13 @@ public class SOGame implements Scene{
 
     private Vector3f calculateNormalFromPlanes(List<Planed> planes) {
         Vector3f normal = new Vector3f(0, 0, 0);
-        if(planes.size() == 0) System.out.println("ERROR");
         planes.forEach(plane -> normal.add((float) plane.a, (float) plane.b, (float) plane.c));
         normal.div(planes.size());
         normal.normalize();
         return normal;
     }
 
+    //generates holes but is very fast
     private Vector3f minimizeQEF2(Octree.Node node, List<Planed> planes) {
         Vector3f[] corners = new Vector3f[]{
             node.getCorner(0),
@@ -191,23 +230,27 @@ public class SOGame implements Scene{
             getQEF(corners[7], planes)
         };
         double qefv = getQEF(node.getCenter(), planes);
+        double oqefv = qefv;
         Vector3f vertex = new Vector3f(node.getCenter());
-        float iterations = 10;
+        float iterations = 20;
         for (int i = 0; i < iterations; i++) {
             for (int i1 = 0; i1 < corners.length; i1++) {
+                if((qefv < 0 && oqefv > 0) || (qefv > 0 && oqefv < 0) || (qefv == 0 && oqefv != 0) || (qefv != 0 && oqefv == 0))
+                    break;
                 Vector3f corner = corners[i1];
                 double qef = qefs[i1];
                 double distance = (Math.abs(qef)+Math.abs(qefv));
                 float lerp = (float) (qefv/distance);
-                vertex.lerp(corner, lerp*0.5f);
+                vertex.lerp(corner, (lerp*lerp)/2);
                 qefv = getQEF(vertex, planes);
             }
         }
         return vertex;
     }
 
+    //its limited accuracy causes some triangle overlapping which is not pretty and is also very slow
     private Vector3f minimizeQEF(Octree.Node node, List<Planed> planes) {
-        float divisions = 16*(1+(1/node.getDepth()));
+        float divisions = 8*(1+(1/node.getDepth()));
         float stepSize = node.getEdgeSize()/divisions;
         double smallestQEF = 999999;
         Vector3f smallestQEFCenter = new Vector3f();
