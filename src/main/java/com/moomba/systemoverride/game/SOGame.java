@@ -13,13 +13,15 @@ import org.joml.Math;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL11.GL_LINE;
 import static org.lwjgl.opengl.GL11.GL_LINES;
 
 public class SOGame implements Scene{
 
     private Engine engine;
-    private Noise noise = new CircleNoise(0, 0, 0, 5);
-    //private Noise noise = new PerlinNoise(321);
+    //private Noise noise = new CircleNoise(0, 0, 0, 3.5f);
+    private Noise noise = new PerlinNoise(321);
 
     public static void main(String[] args){
         System.out.println("Starting System Override");
@@ -31,47 +33,40 @@ public class SOGame implements Scene{
     public void init(Engine engine, AssetLoader loader) {
         this.engine = engine;
 
-        //addAxes(0, 0, 0, 3);
-        addCamera(2, 2, 2);
-        //addCube(0, 0, 0, 1, 1, 0, 1);
-        addTerrain(0, 0, 0, 10, 16884);
+        addCamera(0, 2, 20);
+        addTerrain(0, 0, 0, 4, 10, 16884);
 
         engine.addSystem(new CameraMovementSystem());
     }
 
-    private void addTerrain(float posX, float posY, float posZ, float size, int seed) {
+    private void addTerrain(float posX, float posY, float posZ, int detail, float size, int seed) {
         DualContourer dualContourer = new DualContourer();
         Octree octree = new Octree(size);
-        octree.subdivide();
-        octree.subdivide();
-        octree.subdivide();
+        for (int i = 0; i < detail; i++)
+            octree.subdivide();
         populateOctree(octree);
         Mesh mesh = dualContourer.contoure(octree);
-        //mesh.setDrawMode(GL_LINES);
+        Entity entity = new Entity();
         MeshComponent meshComponent = new MeshComponent(mesh);
+        entity.addComponent(meshComponent);
         TransformComponent transformComponent = new TransformComponent();
         transformComponent.getPosition().set(posX, posY, posZ);
-        OctreeComponent octreeComponent = new OctreeComponent(octree);
-        Entity entity = new Entity();
-        entity.addComponent(meshComponent);
         entity.addComponent(transformComponent);
-        entity.addComponent(octreeComponent);
+        //OctreeComponent octreeComponent = new OctreeComponent(octree);
+        //entity.addComponent(octreeComponent);
+        //mesh.setPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         engine.addEntity(entity);
     }
 
-    float noiseScale = 1f;
-
     private float getNoise(float x, float y, float z){
-        return noise.noisef(x/noiseScale, y/noiseScale, z/noiseScale);
+        return noise.noisef(x, y, z);
     }
 
     private Vector3d getGradient(double x, double y, double z){
-        return noise.gradient(x/noiseScale, y/noiseScale, z/noiseScale);
+        return noise.gradient(x, y, z);
     }
 
     private void populateOctree(Octree octree) {
-        //Noise noise = new PerlinNoise(321);
-        //Noise noise = new CircleNoise(0, 0, 0, 4f);
         octree.processLeafs(node ->{
             node.setSign(0, getNoise(
                     node.getCenter().x - node.getEdgeSize()/2,
@@ -166,8 +161,45 @@ public class SOGame implements Scene{
         return normal;
     }
 
+    private Vector3f minimizeQEF2(Octree.Node node, List<Planed> planes) {
+        Vector3f[] corners = new Vector3f[]{
+            node.getCorner(0),
+            node.getCorner(1),
+            node.getCorner(2),
+            node.getCorner(3),
+            node.getCorner(4),
+            node.getCorner(5),
+            node.getCorner(6),
+            node.getCorner(7)
+        };
+        double[] qefs = new double[]{
+            getQEF(corners[0], planes),
+            getQEF(corners[1], planes),
+            getQEF(corners[2], planes),
+            getQEF(corners[3], planes),
+            getQEF(corners[4], planes),
+            getQEF(corners[5], planes),
+            getQEF(corners[6], planes),
+            getQEF(corners[7], planes)
+        };
+        double qefv = getQEF(node.getCenter(), planes);
+        Vector3f vertex = new Vector3f(node.getCenter());
+        float iterations = 10;
+        for (int i = 0; i < iterations; i++) {
+            for (int i1 = 0; i1 < corners.length; i1++) {
+                Vector3f corner = corners[i1];
+                double qef = qefs[i1];
+                double distance = (Math.abs(qef)+Math.abs(qefv));
+                float lerp = (float) (qefv/distance);
+                vertex.lerp(corner, lerp*0.5f);
+                qefv = getQEF(vertex, planes);
+            }
+        }
+        return vertex;
+    }
+
     private Vector3f minimizeQEF(Octree.Node node, List<Planed> planes) {
-        float divisions = 32;
+        float divisions = 16*(1+(1/node.getDepth()));
         float stepSize = node.getEdgeSize()/divisions;
         double smallestQEF = 999999;
         Vector3f smallestQEFCenter = new Vector3f();
