@@ -36,11 +36,13 @@ public class Engine{
     private Map<Family, List<Entity>> familyMap;
 
     private List<EntityListener> entityListeners;
+    private List<Runnable> updateables;
 
     private Renderer renderer;
     private AssetLoader assetLoader;
     private InputManager inputManager;
     private Window window;
+
 
     public Engine(){
         systems = new ArrayList<>();
@@ -50,10 +52,11 @@ public class Engine{
         familyMap = new HashMap<>();
 
         entityListeners = new ArrayList<>();
+        updateables = new ArrayList<>();
     }
 
     private void init(Scene scene){
-        window = new Window(1080, 720, "System Override", false, false, true);
+        window = new Window(1920, 1080, "System Override", false, true, true);
         window.init();
         window.lockMouse();
 
@@ -153,7 +156,13 @@ public class Engine{
                 system.update(familyMap.get(system.getFamily()), inputManager);
         });
 
+        updateables.forEach(Runnable::run);
+
         //update stuff here
+    }
+
+    public void addUpdateable(Runnable runnable){
+        updateables.add(runnable);
     }
 
     public boolean isSystemRunning(Class<? extends EntitySystem> claz) {
@@ -178,6 +187,10 @@ public class Engine{
         renderer.render();
 
         window.update();
+    }
+
+    public InputManager getInputManager() {
+        return inputManager;
     }
 
     public int getFPS(){
