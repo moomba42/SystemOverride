@@ -15,9 +15,6 @@ import org.joml.Math;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
-import static org.lwjgl.opengl.GL11.GL_LINE;
-
 public class SOGame implements Scene{
 
     private Engine engine;
@@ -34,7 +31,7 @@ public class SOGame implements Scene{
         this.engine = engine;
 
         addCamera(0, 2, 20);
-        addTerrain(0, 0, 0, 4, 10, 16884);
+        addTerrain(0, 0, 0, 3, 20, 16884);
 
         engine.addSystem(new CameraMovementSystem());
     }
@@ -52,8 +49,8 @@ public class SOGame implements Scene{
         TransformComponent transformComponent = new TransformComponent();
         transformComponent.getPosition().set(posX, posY, posZ);
         entity.addComponent(transformComponent);
-        //OctreeComponent octreeComponent = new OctreeComponent(octree);
-        //entity.addComponent(octreeComponent);
+        OctreeComponent octreeComponent = new OctreeComponent(octree);
+        entity.addComponent(octreeComponent);
         //mesh.setPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         engine.addEntity(entity);
     }
@@ -136,27 +133,36 @@ public class SOGame implements Scene{
     }
 
     private boolean nodeExhibitsSignChange(Octree.Node node) {
-        if(node.getSign(0) >= 0 &&
-                node.getSign(1) >= 0 &&
-                node.getSign(2) >= 0 &&
-                node.getSign(3) >= 0 &&
-                node.getSign(4) >= 0 &&
-                node.getSign(5) >= 0 &&
-                node.getSign(6) >= 0 &&
-                node.getSign(7) >= 0) return false;
-        if(node.getSign(0) <= 0 &&
-                node.getSign(1) <= 0 &&
-                node.getSign(2) <= 0 &&
-                node.getSign(3) <= 0 &&
-                node.getSign(4) <= 0 &&
-                node.getSign(5) <= 0 &&
-                node.getSign(6) <= 0 &&
-                node.getSign(7) <= 0) return false;
+        if(node.getSign(0) > 0 &&
+                node.getSign(1) > 0 &&
+                node.getSign(2) > 0 &&
+                node.getSign(3) > 0 &&
+                node.getSign(4) > 0 &&
+                node.getSign(5) > 0 &&
+                node.getSign(6) > 0 &&
+                node.getSign(7) > 0) return false;
+        if(node.getSign(0) < 0 &&
+                node.getSign(1) < 0 &&
+                node.getSign(2) < 0 &&
+                node.getSign(3) < 0 &&
+                node.getSign(4) < 0 &&
+                node.getSign(5) < 0 &&
+                node.getSign(6) < 0 &&
+                node.getSign(7) < 0) return false;
+        if(node.getSign(0) == 0 &&
+                node.getSign(1) == 0 &&
+                node.getSign(2) == 0 &&
+                node.getSign(3) == 0 &&
+                node.getSign(4) == 0 &&
+                node.getSign(5) == 0 &&
+                node.getSign(6) == 0 &&
+                node.getSign(7) == 0) return false;
         return true;
     }
 
     private Vector3f calculateNormalFromPlanes(List<Planed> planes) {
         Vector3f normal = new Vector3f(0, 0, 0);
+        if(planes.size() == 0) System.out.println("ERROR");
         planes.forEach(plane -> normal.add((float) plane.a, (float) plane.b, (float) plane.c));
         normal.div(planes.size());
         normal.normalize();
@@ -201,13 +207,13 @@ public class SOGame implements Scene{
     }
 
     private Vector3f minimizeQEF(Octree.Node node, List<Planed> planes) {
-        float divisions = 16*(1+(1/node.getDepth()));
+        float divisions = 16;
         float stepSize = node.getEdgeSize()/divisions;
         double smallestQEF = 999999;
         Vector3f smallestQEFCenter = new Vector3f();
-        for(float ix = 0; ix < divisions; ix++){
+        for(float ix = 0; ix <= divisions; ix++){
             for(float iy = 0; iy <= divisions; iy++) {
-                for (float iz = 0; iz < divisions; iz++) {
+                for (float iz = 0; iz <= divisions; iz++) {
                     Vector3f cellCenter = new Vector3f(
                             node.getCenter().x-(node.getEdgeSize()/2)+(ix*stepSize),
                             node.getCenter().y-(node.getEdgeSize()/2)+(iy*stepSize),
@@ -236,7 +242,10 @@ public class SOGame implements Scene{
         return QEF;
     }
     private boolean signChanges(int a, int b, Octree.Node node) {
-        return (node.getSign(a) < 0 && node.getSign(b) > 0) || (node.getSign(b) < 0 && node.getSign(a) > 0);
+        return (node.getSign(a) < 0 && node.getSign(b) > 0) ||
+                (node.getSign(b) < 0 && node.getSign(a) > 0) ||
+                        (node.getSign(a) == 0 && node.getSign(b) != 0) ||
+                        (node.getSign(b) == 0 && node.getSign(a) != 0);
     }
 
     private void addCube(float x, float y, float z, float size, float r, float g, float b) {
