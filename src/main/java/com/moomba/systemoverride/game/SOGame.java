@@ -4,7 +4,6 @@ import com.moomba.systemoverride.engine.*;
 import com.moomba.systemoverride.engine.entities.*;
 import com.moomba.systemoverride.engine.entities.components.CameraComponent;
 import com.moomba.systemoverride.engine.entities.components.MeshComponent;
-import com.moomba.systemoverride.engine.entities.components.OctreeComponent;
 import com.moomba.systemoverride.engine.entities.components.TransformComponent;
 import com.moomba.systemoverride.engine.entities.systems.CameraMovementSystem;
 import org.joml.*;
@@ -12,10 +11,6 @@ import org.joml.Math;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
-import static org.lwjgl.opengl.GL11.GL_LINE;
-import static org.lwjgl.opengl.GL11.GL_LINES;
 
 public class SOGame implements Scene{
 
