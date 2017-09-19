@@ -147,8 +147,7 @@ public class DCMesher {
 
     private void edgeProc(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2, Octree.Node nd3, Axis axis){
         if(nd0.isLeaf() && nd1.isLeaf() && nd2.isLeaf() && nd3.isLeaf()){
-            if(edgeExhibitsSignChange(nd0, nd1, nd2, nd3, axis))
-                classifyMinimalEdge(nd0, nd1, nd2, nd3);
+                classifyMinimalEdge(nd0, nd1, nd2, nd3, axis);
         }else if(axis.equals(Axis.X)){
             edgeProc(childOrParent(nd0, 3), childOrParent(nd1, 7), childOrParent(nd2, 1), childOrParent(nd3, 5), Axis.X);
             edgeProc(childOrParent(nd0, 2), childOrParent(nd1, 6), childOrParent(nd2, 0), childOrParent(nd3, 4), Axis.X);
@@ -161,21 +160,22 @@ public class DCMesher {
         }
     }
 
-    private void classifyMinimalEdge(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2, Octree.Node nd3) {
-        if(nd0 == nd1) classifyMinimalEdge(nd0, nd2, nd3);
-        else if(nd1 == nd2) classifyMinimalEdge(nd0, nd1, nd3);
-        else if(nd2 == nd3) classifyMinimalEdge(nd0, nd1, nd2);
-        else if(nd3 == nd0) classifyMinimalEdge(nd0, nd1, nd2);
-        else if(nd0 == nd2) classifyMinimalEdge(nd0, nd1, nd3);
-        else if(nd1 == nd3) classifyMinimalEdge(nd0, nd1, nd2);
-        else if(!nd0.isTagged()) classifyMinimalEdge(nd1, nd2, nd3);
-        else if(!nd1.isTagged()) classifyMinimalEdge(nd0, nd2, nd3);
-        else if(!nd2.isTagged()) classifyMinimalEdge(nd0, nd1, nd3);
-        else if(!nd3.isTagged()) classifyMinimalEdge(nd0, nd1, nd2);
-        else createQuad(nd0, nd1, nd2, nd3);
+    private void classifyMinimalEdge(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2, Octree.Node nd3, Axis axis) {
+        if(nd0 == nd1) classifyMinimalEdge(nd0, nd2, nd3, axis);
+        else if(nd1 == nd2) classifyMinimalEdge(nd0, nd1, nd3, axis);
+        else if(nd2 == nd3) classifyMinimalEdge(nd0, nd1, nd2, axis);
+        else if(nd3 == nd0) classifyMinimalEdge(nd0, nd1, nd2, axis);
+        else if(nd0 == nd2) classifyMinimalEdge(nd0, nd1, nd3, axis);
+        else if(nd1 == nd3) classifyMinimalEdge(nd0, nd1, nd2, axis);
+        else if(!nd0.isTagged()) classifyMinimalEdge(nd1, nd2, nd3, axis);
+        else if(!nd1.isTagged()) classifyMinimalEdge(nd0, nd2, nd3, axis);
+        else if(!nd2.isTagged()) classifyMinimalEdge(nd0, nd1, nd3, axis);
+        else if(!nd3.isTagged()) classifyMinimalEdge(nd0, nd1, nd2, axis);
+        else if(edgeExhibitsSignChange(nd0, nd1, nd2, nd3, axis)) createQuad(nd0, nd1, nd2, nd3);
     }
-    private void classifyMinimalEdge(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2) {
-        if(nd0 != nd1 && nd1 != nd2 && nd2 != nd0 && nd0.isTagged() && nd1.isTagged() && nd2.isTagged())
+    private void classifyMinimalEdge(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2, Axis axis) {
+        if(nd0 != nd1 && nd1 != nd2 && nd2 != nd0 && nd0.isTagged() && nd1.isTagged() && nd2.isTagged() &&
+                edgeExhibitsSignChange(nd0, nd1, nd2, null, axis))
             createTriangle(nd0, nd1, nd2);
     }
 

@@ -25,7 +25,7 @@ public class HermiteDataGenerator {
                 hermiteData.setCornerSign(i, (float) function.noise(corner.x, corner.y, corner.z));
             }
 
-            if()
+            if(!nodeExhibitsSignChange(hermiteData)) return;
 
             //for each edge that exhibits a sign change, generate a function intersection point and normal, then store
             //it in the hermite data object
@@ -58,6 +58,34 @@ public class HermiteDataGenerator {
         });
 
         return node;
+    }
+
+    private boolean nodeExhibitsSignChange(HermiteData hermiteData) {
+        if(hermiteData.getCornerSign(0) > 0 &&
+                hermiteData.getCornerSign(1) > 0 &&
+                hermiteData.getCornerSign(2) > 0 &&
+                hermiteData.getCornerSign(3) > 0 &&
+                hermiteData.getCornerSign(4) > 0 &&
+                hermiteData.getCornerSign(5) > 0 &&
+                hermiteData.getCornerSign(6) > 0 &&
+                hermiteData.getCornerSign(7) > 0) return false;
+        if(hermiteData.getCornerSign(0) < 0 &&
+                hermiteData.getCornerSign(1) < 0 &&
+                hermiteData.getCornerSign(2) < 0 &&
+                hermiteData.getCornerSign(3) < 0 &&
+                hermiteData.getCornerSign(4) < 0 &&
+                hermiteData.getCornerSign(5) < 0 &&
+                hermiteData.getCornerSign(6) < 0 &&
+                hermiteData.getCornerSign(7) < 0) return false;
+        if(hermiteData.getCornerSign(0) == 0 &&
+                hermiteData.getCornerSign(1) == 0 &&
+                hermiteData.getCornerSign(2) == 0 &&
+                hermiteData.getCornerSign(3) == 0 &&
+                hermiteData.getCornerSign(4) == 0 &&
+                hermiteData.getCornerSign(5) == 0 &&
+                hermiteData.getCornerSign(6) == 0 &&
+                hermiteData.getCornerSign(7) == 0) return false;
+        return true;
     }
 
     private Vector3f toVector3f(Vector3d normal) {

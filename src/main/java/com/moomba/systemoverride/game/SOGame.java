@@ -18,7 +18,7 @@ import static org.lwjgl.opengl.GL11.GL_LINE;
 public class SOGame implements Scene{
 
     private Engine engine;
-    private Function function = new SimplexNoiseFunction(6468432);
+    private Function function = new SimplexNoiseFunction(124);
     private Mesh mesh;
 
     public static void main(String[] args){

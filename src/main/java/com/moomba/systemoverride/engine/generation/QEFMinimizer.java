@@ -1,6 +1,7 @@
 package com.moomba.systemoverride.engine.generation;
 
 import org.joml.*;
+import org.joml.Math;
 
 import java.util.List;
 
@@ -9,16 +10,58 @@ public class QEFMinimizer {
 
     public void minimizeQEFsForTaggedNodes(Octree.Node root, Function function){
         root.processLeafs(node -> {
-            Vector3f minimizer = minimizeQEF(node);
-            Vector3d normald = function.normal(minimizer.x, minimizer.y, minimizer.z);
-            Vector3f normal = new Vector3f((float) normald.x, (float) normald.y, (float) normald.z);
-            FunctionIntersection functionIntersection = new FunctionIntersection(minimizer, normal);
-            node.setQEFMinimizer(functionIntersection);
+            if(node.isTagged()) {
+                Vector3f minimizer = minimizeQEF2(node);
+                Vector3d normald = function.normal(minimizer.x, minimizer.y, minimizer.z);
+                Vector3f normal = new Vector3f((float) normald.x, (float) normald.y, (float) normald.z);
+                FunctionIntersection functionIntersection = new FunctionIntersection(minimizer, normal);
+                node.setQEFMinimizer(functionIntersection);
+            }
         });
     }
 
+    private Vector3f minimizeQEF2(Octree.Node node) {
+        Vector3f[] corners = new Vector3f[]{
+                node.getCornerPosition(0),
+                node.getCornerPosition(1),
+                node.getCornerPosition(2),
+                node.getCornerPosition(3),
+                node.getCornerPosition(4),
+                node.getCornerPosition(5),
+                node.getCornerPosition(6),
+                node.getCornerPosition(7)
+        };
+        double[] qefs = new double[]{
+                getQEF(corners[0], node.getHermiteData().getFunctionIntersections()),
+                getQEF(corners[1], node.getHermiteData().getFunctionIntersections()),
+                getQEF(corners[2], node.getHermiteData().getFunctionIntersections()),
+                getQEF(corners[3], node.getHermiteData().getFunctionIntersections()),
+                getQEF(corners[4], node.getHermiteData().getFunctionIntersections()),
+                getQEF(corners[5], node.getHermiteData().getFunctionIntersections()),
+                getQEF(corners[6], node.getHermiteData().getFunctionIntersections()),
+                getQEF(corners[7], node.getHermiteData().getFunctionIntersections())
+        };
+        double qefv = getQEF(node.getCenter(), node.getHermiteData().getFunctionIntersections());
+        double oqefv = qefv;
+        Vector3f vertex = new Vector3f(node.getCenter());
+        float iterations = 10;
+        for (int i = 0; i < iterations; i++) {
+            for (int i1 = 0; i1 < corners.length; i1++) {
+                if((qefv < 0 && oqefv > 0) || (qefv > 0 && oqefv < 0) || (qefv == 0 && oqefv != 0) || (qefv != 0 && oqefv == 0))
+                    break;
+                Vector3f corner = corners[i1];
+                double qef = qefs[i1];
+                double distance = (Math.abs(qef)+Math.abs(qefv));
+                float lerp = (float) (qefv/distance);
+                vertex.lerp(corner, (lerp*lerp));
+                qefv = getQEF(vertex, node.getHermiteData().getFunctionIntersections());
+            }
+        }
+        return vertex;
+    }
+
     private Vector3f minimizeQEF(Octree.Node node) {
-        float divisions = 32;
+        float divisions = 16;
         float stepSize = node.getEdgeSize()/divisions;
         double smallestQEF = 99999;
         Vector3f smallestQEFCenter = new Vector3f();
