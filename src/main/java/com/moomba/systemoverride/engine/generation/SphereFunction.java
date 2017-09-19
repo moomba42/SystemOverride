@@ -26,4 +26,18 @@ public class SphereFunction implements Function {
     public Vector3d normal(double x, double y, double z) {
         return new Vector3d((x*scale.x)-pos.x, (y*scale.y)-pos.y, (z*scale.z)-pos.z).normalize();
     }
+
+    @Override
+    public void setScale(double x, double y, double z) {
+        scale.x = x;
+        scale.y = y;
+        scale.z = z;
+    }
+
+    @Override
+    public void setTranslation(double x, double y, double z) {
+        pos.x = x;
+        pos.y = y;
+        pos.z = z;
+    }
 }

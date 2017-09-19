@@ -6,6 +6,7 @@ import com.moomba.systemoverride.engine.entities.EntitySystem;
 import com.moomba.systemoverride.engine.entities.components.MeshComponent;
 import com.moomba.systemoverride.engine.entities.components.OctreeComponent;
 import com.moomba.systemoverride.engine.entities.components.TransformComponent;
+import com.moomba.systemoverride.engine.generation.Octree;
 import com.moomba.systemoverride.engine.input.InputManager;
 
 import java.util.List;
@@ -44,14 +45,14 @@ public class OctreeDebugRenderSystem implements EntitySystem {
         entities.forEach(entity -> {
             TransformComponent entityTransformComponent = entity.getComponent(TransformComponent.class);
             Octree octree = entity.getComponent(OctreeComponent.class).getOctree();
-            octree.processLeafs(node ->{
+            octree.forEachLeaf(node ->{
                 if(!node.isTagged()) return;
                 transformComponent.reset();
-                transformComponent.getPosition().set(node.center).add(entityTransformComponent.getPosition());
-                transformComponent.getScale().set(node.edgeSize);
+                transformComponent.getPosition().set(node.getCenter()).add(entityTransformComponent.getPosition());
+                transformComponent.getScale().set(node.getEdgeSize());
                 renderer.queueMesh(quadCube, transformComponent.asTransformMatrix());
                 transformComponent.reset();
-                transformComponent.getPosition().set(node.vertex).add(entityTransformComponent.getPosition());
+                transformComponent.getPosition().set(node.getQEFMinimizer().getPosition()).add(entityTransformComponent.getPosition());
                 transformComponent.getScale().set(1);
                 renderer.queueMesh(vertexCube, transformComponent.asTransformMatrix());
             });

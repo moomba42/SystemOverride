@@ -41,6 +41,9 @@ public class SimplexNoiseFunction implements Function{
     private short[] perm = new short[512];
     private short[] permMod12 = new short[512];
 
+    private double scaleX = 1, scaleY = 1, scaleZ = 1;
+    private double translationX = 0, translationY = 0, translationZ = 0;
+
     public SimplexNoiseFunction(int seed) {
         p = p_supply.clone();
 
@@ -81,7 +84,11 @@ public class SimplexNoiseFunction implements Function{
 
 
     @Override
-    public double noise(double xin, double yin, double zin) {
+    public double noise(double xxx, double yyy, double zzz) {
+        double xin = (xxx/scaleX)+translationX;
+        double yin = (yyy/scaleY)+translationY;
+        double zin = (zzz/scaleZ)+translationZ;
+
         double n0, n1, n2, n3; // Function contributions from the four corners
         // Skew the input space to determine which simplex cell we're in
         double s = (xin + yin + zin)*F3; // Very nice and simple skew factor for 3D
@@ -209,12 +216,26 @@ public class SimplexNoiseFunction implements Function{
 
     private static final double gradientSample = 0.0001;
     @Override
-    public Vector3d normal(double x, double y, double z) {
+    public Vector3d normal(double xin, double yin, double zin) {
         return new Vector3d(
-                -noise(x-gradientSample, y, z) + noise(x+gradientSample, y, z),
-                -noise(x, y-gradientSample, z) + noise(x, y+gradientSample, z),
-                -noise(x, y, z-gradientSample) + noise(x, y, z+gradientSample))
+                -noise(xin-gradientSample, yin, zin) + noise(xin+gradientSample, yin, zin),
+                -noise(xin, yin-gradientSample, zin) + noise(xin, yin+gradientSample, zin),
+                -noise(xin, yin, zin-gradientSample) + noise(xin, yin, zin+gradientSample))
                 .normalize();
+    }
+
+    @Override
+    public void setScale(double x, double y, double z) {
+        this.scaleX = x;
+        this.scaleY = y;
+        this.scaleZ = z;
+    }
+
+    @Override
+    public void setTranslation(double x, double y, double z) {
+        this.translationX = x;
+        this.translationY = y;
+        this.translationZ = z;
     }
 
     // Inner class to speed upp gradient computations
