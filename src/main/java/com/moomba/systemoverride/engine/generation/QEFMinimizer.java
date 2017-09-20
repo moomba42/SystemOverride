@@ -22,14 +22,14 @@ public class QEFMinimizer {
 
     private Vector3f minimizeQEF2(Octree.Node node) {
         Vector3f[] corners = new Vector3f[]{
-                node.getCornerPosition(0),
-                node.getCornerPosition(1),
-                node.getCornerPosition(2),
-                node.getCornerPosition(3),
-                node.getCornerPosition(4),
-                node.getCornerPosition(5),
-                node.getCornerPosition(6),
-                node.getCornerPosition(7)
+                node.getCornerPosition(0).lerp(node.getCenter(), 0.01f),
+                node.getCornerPosition(1).lerp(node.getCenter(), 0.01f),
+                node.getCornerPosition(2).lerp(node.getCenter(), 0.01f),
+                node.getCornerPosition(3).lerp(node.getCenter(), 0.01f),
+                node.getCornerPosition(4).lerp(node.getCenter(), 0.01f),
+                node.getCornerPosition(5).lerp(node.getCenter(), 0.01f),
+                node.getCornerPosition(6).lerp(node.getCenter(), 0.01f),
+                node.getCornerPosition(7).lerp(node.getCenter(), 0.01f)
         };
         double[] qefs = new double[]{
                 getQEF(corners[0], node.getHermiteData().getFunctionIntersections()),

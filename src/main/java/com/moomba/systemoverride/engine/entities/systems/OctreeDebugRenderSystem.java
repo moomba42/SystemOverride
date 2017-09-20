@@ -10,11 +10,6 @@ import com.moomba.systemoverride.engine.generation.Octree;
 import com.moomba.systemoverride.engine.input.InputManager;
 
 import java.util.List;
-
-import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
-import static org.lwjgl.opengl.GL11.GL_LINE;
-import static org.lwjgl.opengl.GL11.glPolygonMode;
-
 public class OctreeDebugRenderSystem implements EntitySystem {
 
     private static final Family family = new Family().includes(TransformComponent.class, OctreeComponent.class);
