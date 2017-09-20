@@ -161,22 +161,11 @@ public class DCMesher {
     }
 
     private void classifyMinimalEdge(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2, Octree.Node nd3, Axis axis) {
-        if(nd0 == nd1) classifyMinimalEdge(nd0, nd2, nd3, axis);
-        else if(nd1 == nd2) classifyMinimalEdge(nd0, nd1, nd3, axis);
-        else if(nd2 == nd3) classifyMinimalEdge(nd0, nd1, nd2, axis);
-        else if(nd3 == nd0) classifyMinimalEdge(nd0, nd1, nd2, axis);
-        else if(nd0 == nd2) classifyMinimalEdge(nd0, nd1, nd3, axis);
-        else if(nd1 == nd3) classifyMinimalEdge(nd0, nd1, nd2, axis);
-        else if(!nd0.isTagged()) classifyMinimalEdge(nd1, nd2, nd3, axis);
-        else if(!nd1.isTagged()) classifyMinimalEdge(nd0, nd2, nd3, axis);
-        else if(!nd2.isTagged()) classifyMinimalEdge(nd0, nd1, nd3, axis);
-        else if(!nd3.isTagged()) classifyMinimalEdge(nd0, nd1, nd2, axis);
-        else if(edgeExhibitsSignChange(nd0, nd1, nd2, nd3, axis)) createQuad(nd0, nd1, nd2, nd3);
-    }
-    private void classifyMinimalEdge(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2, Axis axis) {
-        if(nd0 != nd1 && nd1 != nd2 && nd2 != nd0 && nd0.isTagged() && nd1.isTagged() && nd2.isTagged() &&
-                edgeExhibitsSignChange(nd0, nd1, nd2, null, axis))
-            createTriangle(nd0, nd1, nd2);
+        if(nd0 != nd1 && nd1 != nd2 && nd2 != nd3 && nd3 != nd0 && nd0 != nd2 && nd1 != nd3 &&
+           nd0.isTagged() && nd1.isTagged() && nd2.isTagged() && nd3.isTagged() &&
+           edgeExhibitsSignChange(nd0, nd1, nd2, nd3, axis)) {
+            createQuad(nd0, nd1, nd2, nd3);
+        }
     }
 
     private boolean edgeExhibitsSignChange(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2, Octree.Node nd3, Axis axis) {
