@@ -15,6 +15,7 @@ import static org.lwjgl.opengl.GL11.GL_FILL;
 import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
 import static org.lwjgl.opengl.GL11.GL_LINE;
 
+//TODO: Clean up the scene.
 public class SOGame implements Scene{
 
     private Engine engine;

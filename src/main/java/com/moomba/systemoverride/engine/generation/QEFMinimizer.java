@@ -20,6 +20,7 @@ public class QEFMinimizer {
         });
     }
 
+    //TODO: Write a qef minimizer based on least squares approximation of the intersection of planes..
     private Vector3f minimizeQEF2(Octree.Node node) {
         Vector3f[] corners = new Vector3f[]{
                 node.getCornerPosition(0).lerp(node.getCenter(), 0.01f),

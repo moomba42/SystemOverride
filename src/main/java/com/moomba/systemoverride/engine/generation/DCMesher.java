@@ -168,6 +168,7 @@ public class DCMesher {
         }
     }
 
+    //TODO: Change this to work for different-sized nodes.
     private boolean edgeExhibitsSignChange(Octree.Node nd0, Octree.Node nd1, Octree.Node nd2, Octree.Node nd3, Axis axis) {
         double a = 0;
         double b = 0;
